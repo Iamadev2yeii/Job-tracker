@@ -97,6 +97,10 @@ def scrape_all_munich(companies: list[dict], cv_profile: dict) -> tuple[list[dic
 
         title_matched_jobs = filter_by_title_only(raw_jobs, cv_profile)
 
+        if not title_matched_jobs:
+            sample_titles = [j.get("title", "") for j in raw_jobs[:8] if j.get("title")]
+            logger.info("  DIAG: no title match. Sample raw titles seen: %s", sample_titles)
+
         matched = []
         for job in title_matched_jobs:
             enrichment_text = None

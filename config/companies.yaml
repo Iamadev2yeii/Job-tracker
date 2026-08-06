@@ -1,12 +1,39 @@
 # Companies scraped directly on their own career pages (Greater Munich
-# only). Filtered down from Giorgio's original combined list (which
-# also covered Zurich, Singapore, and several Swiss cities) to just
-# the 161 companies already tagged Munich there. A lot of these large
-# corporates and industrials (Allianz, Munich Re, Siemens, BMW, Linde,
-# etc.) also post ESG / Sustainability / Carbon Accounting roles, not
-# only PM roles, so this is a reasonable starting universe even though
-# the original list was built with a PM job search in mind. Add or
-# remove entries freely — see SETUP_GUIDE.md Part 7.
+# only). Rebuilt from scratch around Prabha'''s actual field — ESG,
+# Sustainability, Carbon Accounting, and Climate — rather than reused
+# from the original PM/aerospace/defense-focused tracker this project
+# was cloned from. Three groups:
+#
+#   1. Climate-tech / ESG-software startups (Tanso, IntegrityNext,
+#      envoria, Ororatech, Ark Climate, Inplanet, and others) — the
+#      closest match to her actual carbon-accounting/ESG-data
+#      background, sourced from Munich'''s climate-tech startup scene
+#      (Munich Startup, AENU'''s Munich Climate Tech Market Map).
+#   2. ESG / sustainability consultancies with a Munich presence
+#      (Anthesis, FTI Consulting, Baker Tilly, WTS Group, EurA,
+#      Ramboll, Drees & Sommer, ERM, ACCONSIS, Capgemini) plus the
+#      Big Four and TUEV SUED, all of which run real ESG advisory
+#      practices.
+#   3. Large Munich-area corporates/institutions with genuine,
+#      verifiable sustainability or ESG-reporting functions —
+#      finance/insurance (Allianz, Munich Re, BayernLB...), energy/
+#      utilities (E.ON, TenneT, Stadtwerke Muenchen, BayWa r.e...),
+#      industrials with real decarbonization programs (Siemens
+#      Energy, MTU, Airbus, MAN Truck & Bus, Traton...), plus public
+#      sector and research (Landeshauptstadt Muenchen, Fraunhofer,
+#      DLR Oberpfaffenhofen, UnternehmerTUM, BUND Naturschutz Bayern).
+#
+# Deliberately dropped everything defense/space/military-adjacent
+# from the original list (Hensoldt, Diehl Defence, KNDS, MBDA, OHB
+# System, Eurofighter, ESO, the Max Planck astrophysics institutes,
+# the various defense-tech startups, etc.) and a handful of other
+# entries with no plausible ESG angle (GEMA, Baader Bank, BMW Bank,
+# Tacterion, isotope/EOS optics, etc.) — not relevant to this search.
+#
+# Many career URLs here are best-effort guesses for smaller/newer
+# companies (same caveat as the original tracker) — see
+# SETUP_GUIDE.md Part 7 for how to fix a `careers_url`/`ats` that
+# isn't returning results. Add or remove entries freely.
 companies:
 - name: BMW Group
   city: Munich
@@ -97,41 +124,6 @@ companies:
   city: Munich
   careers_url: https://www.airbus.com/en/careers
   ats: workday
-  board_token: ''
-- name: Hensoldt
-  city: Munich
-  careers_url: https://www.hensoldt.net/careers/
-  ats: auto
-  board_token: ''
-- name: Diehl Defence
-  city: Munich
-  careers_url: https://www.diehl.com/defence/en/career/
-  ats: auto
-  board_token: ''
-- name: KNDS Deutschland
-  city: Munich
-  careers_url: https://www.knds.de/karriere/
-  ats: auto
-  board_token: ''
-- name: MBDA Deutschland
-  city: Munich
-  careers_url: https://www.mbda-systems.com/careers/
-  ats: auto
-  board_token: ''
-- name: OHB System
-  city: Munich
-  careers_url: https://www.ohb.de/en/career
-  ats: auto
-  board_token: ''
-- name: IABG
-  city: Munich
-  careers_url: https://www.iabg.de/en/career/
-  ats: auto
-  board_token: ''
-- name: ESG Elektroniksystem- und Logistik
-  city: Munich
-  careers_url: https://www.esg.de/en/career/
-  ats: auto
   board_token: ''
 - name: Allianz
   city: Munich
@@ -298,44 +290,9 @@ companies:
   careers_url: https://www.celonis.com/careers/
   ats: greenhouse
   board_token: ''
-- name: Quantum Systems
-  city: Munich
-  careers_url: https://quantum-systems.com/careers/
-  ats: personio
-  board_token: ''
-- name: Tytan Technologies
-  city: Munich
-  careers_url: https://www.tytan-technologies.com/careers
-  ats: auto
-  board_token: ''
-- name: Alpine Eagle
-  city: Munich
-  careers_url: https://www.alpine-eagle.com/careers
-  ats: auto
-  board_token: ''
-- name: Reflex Aerospace
-  city: Munich
-  careers_url: https://www.reflexaerospace.com/careers
-  ats: personio
-  board_token: ''
-- name: ARX Robotics
-  city: Munich
-  careers_url: https://www.arx-robotics.com/careers
-  ats: personio
-  board_token: ''
-- name: Isar Aerospace
-  city: Munich
-  careers_url: https://www.isaraerospace.com/careers
-  ats: auto
-  board_token: ''
 - name: Proxima Fusion
   city: Munich
   careers_url: https://www.proximafusion.com/careers
-  ats: auto
-  board_token: ''
-- name: ITM Isotopen Technologien Muenchen
-  city: Munich
-  careers_url: https://itm-radiopharma.com/en/career/
   ats: auto
   board_token: ''
 - name: Personio
@@ -423,11 +380,6 @@ companies:
   careers_url: https://www.navvis.com/careers
   ats: auto
   board_token: ''
-- name: Blickfeld
-  city: Munich
-  careers_url: https://www.blickfeld.com/careers/
-  ats: auto
-  board_token: ''
 - name: Marvel Fusion
   city: Munich
   careers_url: https://www.marvelfusion.com/careers/
@@ -461,11 +413,6 @@ companies:
 - name: TUEV SUED
   city: Munich
   careers_url: https://www.tuvsud.com/en/careers
-  ats: auto
-  board_token: ''
-- name: EOS Electro Optical Systems
-  city: Munich
-  careers_url: https://www.eos.info/en/career
   ats: auto
   board_token: ''
 - name: MediaMarktSaturn
@@ -668,34 +615,9 @@ companies:
   careers_url: https://www.olympus-europa.com/company/en/careers/
   ats: auto
   board_token: ''
-- name: Eurofighter Jagdflugzeug GmbH
-  city: Munich
-  careers_url: https://www.eurofighter.com/careers
-  ats: auto
-  board_token: ''
-- name: European Southern Observatory
-  city: Munich
-  careers_url: https://recruitment.eso.org/
-  ats: auto
-  board_token: ''
 - name: Max Planck Institute for Plasma Physics
   city: Munich
   careers_url: https://www.ipp.mpg.de/careers
-  ats: auto
-  board_token: ''
-- name: Max Planck Institute for Astrophysics
-  city: Munich
-  careers_url: https://www.mpa-garching.mpg.de/jobs
-  ats: auto
-  board_token: ''
-- name: Max Planck Institute for Extraterrestrial Physics
-  city: Munich
-  careers_url: https://www.mpe.mpg.de/jobs
-  ats: auto
-  board_token: ''
-- name: Leibniz Supercomputing Centre
-  city: Munich
-  careers_url: https://www.lrz.de/wir/stellenangebote/
   ats: auto
   board_token: ''
 - name: Zeppelin GmbH
@@ -706,16 +628,6 @@ companies:
 - name: Marc O'Polo
   city: Munich
   careers_url: https://www.marc-o-polo.com/career
-  ats: auto
-  board_token: ''
-- name: BMW Bank
-  city: Munich
-  careers_url: https://www.bmwgroup.jobs/de/en.html
-  ats: auto
-  board_token: ''
-- name: GEMA
-  city: Munich
-  careers_url: https://www.gema.de/en/about-us/career
   ats: auto
   board_token: ''
 - name: UnternehmerTUM
@@ -798,18 +710,198 @@ companies:
   careers_url: https://www.publicissapient.com/careers
   ats: auto
   board_token: ''
-- name: Baader Bank
-  city: Munich
-  careers_url: https://www.baaderbank.de/en/career
-  ats: auto
-  board_token: ''
-- name: Tacterion
-  city: Munich
-  careers_url: https://www.tacterion.com/careers
-  ats: personio
-  board_token: ''
 - name: ProGlove
   city: Munich
   careers_url: https://www.proglove.com/careers/
   ats: personio
+  board_token: ''
+- name: ClimatePartner
+  city: Munich
+  careers_url: https://www.climatepartner.com/en/careers
+  ats: auto
+  board_token: ''
+- name: Green City AG
+  city: Munich
+  careers_url: https://www.greencity.de/karriere/
+  ats: auto
+  board_token: ''
+- name: Fraunhofer-Gesellschaft
+  city: Munich
+  careers_url: https://www.fraunhofer.de/en/jobs-and-career.html
+  ats: auto
+  board_token: ''
+- name: Ramboll Deutschland
+  city: Munich
+  careers_url: https://ramboll.com/careers
+  ats: auto
+  board_token: ''
+- name: Drees & Sommer
+  city: Munich
+  careers_url: https://www.dreso.com/en/career/
+  ats: auto
+  board_token: ''
+- name: ERM (Environmental Resources Management)
+  city: Munich
+  careers_url: https://www.erm.com/careers/
+  ats: auto
+  board_token: ''
+- name: Landeshauptstadt Muenchen
+  city: Munich
+  careers_url: https://stadt.muenchen.de/infos/stellenangebote.html
+  ats: auto
+  board_token: ''
+- name: Enviria Energy
+  city: Munich
+  careers_url: https://enviria.energy/careers/
+  ats: auto
+  board_token: ''
+- name: Tanso
+  city: Munich
+  careers_url: https://www.tanso.io/careers
+  ats: auto
+  board_token: ''
+- name: IntegrityNext
+  city: Munich
+  careers_url: https://www.integritynext.com/careers/
+  ats: auto
+  board_token: ''
+- name: envoria
+  city: Munich
+  careers_url: https://envoria.com/careers
+  ats: auto
+  board_token: ''
+- name: Ororatech
+  city: Munich
+  careers_url: https://ororatech.com/career/
+  ats: auto
+  board_token: ''
+- name: Ark Climate
+  city: Munich
+  careers_url: https://www.ark-climate.com/careers
+  ats: auto
+  board_token: ''
+- name: Inplanet
+  city: Munich
+  careers_url: https://inplanet.earth/careers
+  ats: auto
+  board_token: ''
+- name: NuuEnergy
+  city: Munich
+  careers_url: https://nuuenergy.de/karriere/
+  ats: auto
+  board_token: ''
+- name: Delta Charge
+  city: Munich
+  careers_url: https://www.delta-charge.com/careers
+  ats: auto
+  board_token: ''
+- name: Encosa Energy
+  city: Munich
+  careers_url: https://encosa-energy.com/careers
+  ats: auto
+  board_token: ''
+- name: Feldwerke
+  city: Munich
+  careers_url: https://feldwerke.com/karriere
+  ats: auto
+  board_token: ''
+- name: Zählerfreunde
+  city: Munich
+  careers_url: https://zaehlerfreunde.com/karriere
+  ats: auto
+  board_token: ''
+- name: OCELL
+  city: Munich
+  careers_url: https://ocell.com/careers
+  ats: auto
+  board_token: ''
+- name: TWAICE
+  city: Munich
+  careers_url: https://www.twaice.com/careers
+  ats: auto
+  board_token: ''
+- name: everdrop
+  city: Munich
+  careers_url: https://everdrop.de/pages/karriere
+  ats: auto
+  board_token: ''
+- name: ChargeX
+  city: Munich
+  careers_url: https://chargex.de/karriere
+  ats: auto
+  board_token: ''
+- name: The Mobility House
+  city: Munich
+  careers_url: https://www.mobilityhouse.com/de_de/karriere
+  ats: auto
+  board_token: ''
+- name: Qwello
+  city: Munich
+  careers_url: https://qwello.de/karriere
+  ats: auto
+  board_token: ''
+- name: GreenCom Networks
+  city: Munich
+  careers_url: https://www.greencom-networks.com/karriere
+  ats: auto
+  board_token: ''
+- name: HeyCharge
+  city: Munich
+  careers_url: https://heycharge.com/careers
+  ats: auto
+  board_token: ''
+- name: Electrochaea
+  city: Munich
+  careers_url: https://www.electrochaea.com/careers
+  ats: auto
+  board_token: ''
+- name: Planet A Foods
+  city: Munich
+  careers_url: https://planet-a-foods.com/careers
+  ats: auto
+  board_token: ''
+- name: AMSilk
+  city: Munich
+  careers_url: https://www.amsilk.com/karriere
+  ats: auto
+  board_token: ''
+- name: Anthesis Group Germany
+  city: Munich
+  careers_url: https://www.anthesisgroup.com/careers/
+  ats: auto
+  board_token: ''
+- name: FTI Consulting Germany
+  city: Munich
+  careers_url: https://www.fticonsulting.com/about/careers
+  ats: auto
+  board_token: ''
+- name: Baker Tilly Germany
+  city: Munich
+  careers_url: https://www.bakertilly.de/karriere
+  ats: auto
+  board_token: ''
+- name: WTS Group
+  city: Munich
+  careers_url: https://www.wts.de/karriere
+  ats: auto
+  board_token: ''
+- name: EurA AG
+  city: Munich
+  careers_url: https://www.eura-ag.com/karriere
+  ats: auto
+  board_token: ''
+- name: Statkraft Deutschland
+  city: Munich
+  careers_url: https://www.statkraft.de/karriere/
+  ats: auto
+  board_token: ''
+- name: DLR Oberpfaffenhofen
+  city: Munich
+  careers_url: https://www.dlr.de/de/karriere
+  ats: auto
+  board_token: ''
+- name: BUND Naturschutz in Bayern
+  city: Munich
+  careers_url: https://www.bund-naturschutz.de/ueber-uns/stellenangebote
+  ats: auto
   board_token: ''

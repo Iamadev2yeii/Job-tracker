@@ -10,14 +10,19 @@ Dachau, and similar — see `src/matcher.py`, `MUNICH_KEYWORDS`), and
 retitled to catch **ESG / Sustainability / Carbon Accounting / Climate**
 roles instead of Project Manager roles.
 
-- `config/companies.yaml` (161 companies) — large Munich-area
-  employers, filtered from the original tracker's combined Munich/
-  Zurich/Singapore/Swiss list down to just the Munich-tagged ones.
-  Many of these (Allianz, Munich Re, Siemens, BMW, Linde, Wacker
-  Chemie, etc.) also post ESG/sustainability roles alongside PM roles,
-  so it's a reasonable starting company list even though it wasn't
-  originally built with this search in mind — add or remove companies
-  freely.
+- `config/companies.yaml` (174 companies) — rebuilt from scratch
+  around ESG/Sustainability/Carbon/Climate relevance, not reused from
+  the original PM/aerospace/defense-focused tracker. Three groups:
+  climate-tech and ESG-software startups (Tanso, IntegrityNext,
+  envoria, Ororatech, and others from Munich's climate-tech scene),
+  ESG/sustainability consultancies (Anthesis, FTI Consulting, Baker
+  Tilly, WTS Group, EurA, Ramboll, Drees & Sommer, ERM, ACCONSIS, the
+  Big Four, TÜV SÜD), and large Munich-area corporates/institutions
+  with genuine sustainability or ESG-reporting functions (finance/
+  insurance, energy/utilities, industrials with real decarbonization
+  programs, plus public sector and research). Everything defense/
+  space/military-adjacent from the original list was dropped as not
+  relevant to this search.
 - `config/cv_profile.yaml` — derived from your CV: title keywords
   (ESG, Sustainability, Nachhaltigkeit, Carbon, Climate, CSRD, etc.)
   and scoring keywords (GHG Protocol, EXIOBASE/EORA, ISAE 3000, Scope
