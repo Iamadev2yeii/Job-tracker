@@ -62,12 +62,46 @@ instead of this file** — it walks through every click.
 
 ## Files you might want to edit
 
-- `config/companies.yaml` — add/remove companies, or fix a
-  `careers_url`/`board_token` if one isn't returning results.
+- `config/companies.yaml` (177 companies) — add/remove companies, or
+  fix a `careers_url`/`ats` that isn't returning results. Set
+  `assume_local: true` on a company only if it's a genuine single-
+  Munich-office company — see the comment at the top of the file for
+  what that flag does.
+- `config/esg_job_boards.yaml` — dedicated ESG/climate job boards
+  (NachhaltigeJobs.de, ClimateTechList.com) plus employment agencies
+  with a sustainability practice (Randstad, Michael Page, Robert
+  Walters, Hays, LP impact). Much higher hit-rate than any single
+  corporate career page, since everything on these is already
+  sustainability-relevant or explicitly filtered to it. Agency-
+  sourced rows may show the agency's name rather than the real
+  employer — see the comment at the top of the file.
 - `config/cv_profile.yaml` — update if your CV changes, adjust which
   job titles count as a match, turn a score floor back on via
   `main_min_score` (0 = off by default), or tune `score_ceiling` if
   relevance scores cluster too high/low.
+
+## How results are prioritized
+
+- **Seniority**: postings with clear senior/leadership titles
+  (Senior, Head of, Director, VP, Chief, Teamleiter, etc.) are
+  excluded — the search targets associate/mid/junior roles. Plain
+  "Manager" titles are NOT excluded, since in German/EU postings
+  that's a standard mid-level title, not "senior manager."
+- **Recency**: postings that look 21 days old or newer (when the
+  platform exposes a date at all) get a small score boost, so they
+  sort nearer the top. Undated postings are neither boosted nor
+  penalized — most platforms simply don't expose a date.
+
+## Why matches are sparse, and what to expect
+
+ESG/Sustainability is a narrow specialty — most companies have 0-2
+such roles open on any given day, even at genuinely relevant
+employers. Adding the dedicated job boards and agencies above should
+meaningfully raise the hit rate, since they're pre-filtered to this
+field rather than scraped one generic corporate career page at a
+time. It still accumulates daily and doesn't reset until the monthly
+archive, so the value compounds over weeks rather than showing up all
+at once.
 
 ## Tracker columns
 

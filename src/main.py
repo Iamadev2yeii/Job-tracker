@@ -47,6 +47,7 @@ logger = logging.getLogger("job_scraper.main")
 
 ROOT = Path(__file__).resolve().parent.parent
 COMPANIES_FILE = ROOT / "config" / "companies.yaml"
+ESG_JOB_BOARDS_FILE = ROOT / "config" / "esg_job_boards.yaml"
 CV_PROFILE_FILE = ROOT / "config" / "cv_profile.yaml"
 TRACKER_FILE = ROOT / "data" / "job_tracker.xlsx"
 
@@ -101,6 +102,7 @@ def scrape_all_munich(companies: list[dict], cv_profile: dict) -> tuple[list[dic
             sample_titles = [j.get("title", "") for j in raw_jobs[:8] if j.get("title")]
             logger.info("  DIAG: no title match. Sample raw titles seen: %s", sample_titles)
 
+        assume_local = bool(company.get("assume_local", False))
         matched = []
         for job in title_matched_jobs:
             enrichment_text = None
@@ -108,11 +110,13 @@ def scrape_all_munich(companies: list[dict], cv_profile: dict) -> tuple[list[dic
                 enrichment_text = fetch_description_fallback(job["url"])
 
             search_text = enrichment_text if enrichment_text is not None else job.get("location", "")
-            if not resolve_munich_match(job, search_text=search_text):
+            if not resolve_munich_match(job, search_text=search_text, assume_local=assume_local):
                 continue
 
             if enrichment_text and not job.get("location"):
                 job["location"] = extract_location_snippet(enrichment_text)
+            if not job.get("location") and assume_local:
+                job["location"] = "Munich (assumed — single-office company)"
 
             if not job.get("description") and enrichment_text:
                 job["description"] = enrichment_text
@@ -161,6 +165,8 @@ def run() -> None:
     reset_headless_budget()  # one shared 15-min headless budget for the whole run
 
     companies = load_yaml(COMPANIES_FILE)["companies"]
+    if ESG_JOB_BOARDS_FILE.exists():
+        companies = companies + load_yaml(ESG_JOB_BOARDS_FILE)["companies"]
     munich_jobs, counts = scrape_all_munich(companies, cv_profile)
 
     summary = update_tracker(TRACKER_FILE, munich_jobs, min_score=cv_profile.get("main_min_score", 0))

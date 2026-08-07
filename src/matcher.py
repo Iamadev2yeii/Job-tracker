@@ -82,6 +82,24 @@ def title_matches(title: str, must_match: list[str]) -> bool:
     return any(term.lower() in t for term in must_match)
 
 
+# Titles clearly pitched at senior/leadership level — excluded per
+# request, since the search is meant to surface associate/mid/junior
+# roles instead. Deliberately narrow: "manager" is NOT on this list,
+# since in German/EU postings "Manager" is a standard mid-level title
+# (e.g. "Sustainability Manager"), not equivalent to an English
+# "senior manager." Only unambiguous seniority markers are excluded.
+SENIORITY_EXCLUDE = [
+    "senior", "sr.", "principal", "head of", "director", "vp ",
+    "vice president", "chief sustainability", "chief esg", "geschäftsführer",
+    "abteilungsleiter", "bereichsleiter", "teamleiter", "leitung",
+]
+
+
+def is_excluded_seniority(title: str) -> bool:
+    t = title.lower()
+    return any(term in t for term in SENIORITY_EXCLUDE)
+
+
 def location_status(location: str) -> str:
     """
     Returns "confirmed" (location text names the Munich metro area),
@@ -101,26 +119,42 @@ def location_status(location: str) -> str:
 
 def filter_by_title_only(jobs: list[dict[str, Any]], cv_profile: dict[str, Any]) -> list[dict[str, Any]]:
     """
-    Just the title check, no location decision — exists so main.py can
-    enrich blank-location postings BEFORE the location filter runs,
-    rather than after (see main.py's scrape_munich docstring for why
-    this ordering matters).
+    Title check plus seniority exclusion — no location decision yet
+    (see main.py's scrape_munich docstring for why that's done later,
+    after enrichment).
     """
     must_match = cv_profile.get("title_must_match", [])
-    return [job for job in jobs if job.get("title") and title_matches(job["title"], must_match)]
+    return [
+        job for job in jobs
+        if job.get("title")
+        and title_matches(job["title"], must_match)
+        and not is_excluded_seniority(job["title"])
+    ]
 
 
-def resolve_munich_match(job: dict[str, Any], search_text: str | None = None) -> bool:
+def resolve_munich_match(job: dict[str, Any], search_text: str | None = None, assume_local: bool = False) -> bool:
     """
     Decides whether a single already title-matched job is confirmed
     in the Munich metro area. Searches search_text if given (e.g. an
     enriched full-page text blob), otherwise falls back to
-    job["location"]. Only "confirmed" counts — "unconfirmed" and
-    "mismatch" are both dropped, same as Giorgio's original tracker
-    (no "unconfirmed location" jobs are shown).
+    job["location"]. Only "confirmed" counts as a match — "mismatch"
+    is always dropped.
+
+    assume_local: for companies with a single Munich office (mostly
+    small local startups — see the `assume_local: true` flag in
+    companies.yaml), a blank/"unconfirmed" location almost always just
+    means the platform didn't expose a location field, not that the
+    job is elsewhere. For those companies only, "unconfirmed" is
+    treated as a pass too, instead of being dropped like it is for
+    every other (typically multi-city/multi-country) company.
     """
     text = search_text if search_text is not None else job.get("location", "")
-    return location_status(text) == "confirmed"
+    status = location_status(text)
+    if status == "confirmed":
+        return True
+    if status == "unconfirmed" and assume_local:
+        return True
+    return False
 
 
 def extract_location_snippet(text: str, window: int = 30) -> str:
@@ -144,6 +178,63 @@ def extract_location_snippet(text: str, window: int = 30) -> str:
     return "Munich"
 
 
+import datetime as _dt
+import re as _re
+
+
+def _parse_posted_date(posted_date: str, today: "_dt.date | None" = None) -> "_dt.date | None":
+    """
+    Best-effort parse of whatever posted_date text a platform exposes
+    (formats vary a lot — ISO dates, DD.MM.YYYY, or relative text like
+    "3 days ago" / "vor 3 Tagen"). Returns None if it can't be read,
+    which is common since many platforms don't expose a date at all.
+    """
+    if not posted_date:
+        return None
+    today = today or _dt.date.today()
+    s = posted_date.strip().lower()
+    if "today" in s or "heute" in s:
+        return today
+    if "yesterday" in s or "gestern" in s:
+        return today - _dt.timedelta(days=1)
+    m = _re.search(r"(\d+)\s*(day|tag)", s)
+    if m:
+        return today - _dt.timedelta(days=int(m.group(1)))
+    m = _re.search(r"(\d+)\s*(hour|stunde)", s)
+    if m:
+        return today
+    m = _re.search(r"(\d+)\s*(week|woche)", s)
+    if m:
+        return today - _dt.timedelta(weeks=int(m.group(1)))
+    m = _re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
+    if m:
+        try:
+            return _dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            return None
+    m = _re.match(r"(\d{1,2})\.(\d{1,2})\.(\d{4})", s)
+    if m:
+        try:
+            return _dt.date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+        except ValueError:
+            return None
+    return None
+
+
+def _recency_boost(posted_date: str, today: "_dt.date | None" = None) -> int:
+    """+3 to the final score if the posting looks 21 days old or
+    newer; 0 otherwise (including when the date can't be read at
+    all — undated postings are neither boosted nor penalized)."""
+    d = _parse_posted_date(posted_date, today)
+    if d is None:
+        return 0
+    today = today or _dt.date.today()
+    days_old = (today - d).days
+    if 0 <= days_old <= 21:
+        return 3
+    return 0
+
+
 def _raw_score(description: str, title: str, keywords: list[dict[str, Any]]) -> int:
     text = f"{title} {description}".lower()
     score = 0
@@ -160,12 +251,14 @@ def score_job_1_to_10(description: str, title: str, keywords: list[dict[str, Any
 
 
 def score_jobs(jobs: list[dict[str, Any]], cv_profile: dict[str, Any]) -> list[dict[str, Any]]:
-    """Adds relevance_score to every job in place. Does not filter
-    anything out — score is for ranking/sorting only."""
+    """Adds relevance_score to every job in place (including a small
+    boost for postings that look recent — see _recency_boost). Does
+    not filter anything out — score is for ranking/sorting only."""
     keywords = cv_profile.get("scoring_keywords", [])
     ceiling = cv_profile.get("score_ceiling", DEFAULT_SCORE_CEILING)
+    today = _dt.date.today()
     for job in jobs:
-        job["relevance_score"] = score_job_1_to_10(
-            job.get("description", ""), job.get("title", ""), keywords, ceiling
-        )
+        base = score_job_1_to_10(job.get("description", ""), job.get("title", ""), keywords, ceiling)
+        boost = _recency_boost(job.get("posted_date", ""), today)
+        job["relevance_score"] = max(1, min(10, base + boost))
     return jobs

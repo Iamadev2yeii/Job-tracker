@@ -30,6 +30,14 @@
 # entries with no plausible ESG angle (GEMA, Baader Bank, BMW Bank,
 # Tacterion, isotope/EOS optics, etc.) — not relevant to this search.
 #
+# `assume_local: true` — set on small, genuinely single-Munich-office
+# companies only. For those, a job whose location came back blank
+# (common — many platforms just don't expose it) is treated as a
+# Munich match instead of being dropped, since there's realistically
+# nowhere else it could be. Left unset (default false) for every
+# multi-city/multi-country company, where a blank location genuinely
+# could be anywhere and dropping it is the safer default.
+#
 # Many career URLs here are best-effort guesses for smaller/newer
 # companies (same caveat as the original tracker) — see
 # SETUP_GUIDE.md Part 7 for how to fix a `careers_url`/`ats` that
@@ -720,11 +728,13 @@ companies:
   careers_url: https://www.climatepartner.com/en/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Green City AG
   city: Munich
   careers_url: https://www.greencity.de/karriere/
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Fraunhofer-Gesellschaft
   city: Munich
   careers_url: https://www.fraunhofer.de/en/jobs-and-career.html
@@ -755,116 +765,139 @@ companies:
   careers_url: https://enviria.energy/careers/
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Tanso
   city: Munich
   careers_url: https://www.tanso.io/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: IntegrityNext
   city: Munich
   careers_url: https://www.integritynext.com/careers/
   ats: auto
   board_token: ''
+  assume_local: true
 - name: envoria
   city: Munich
   careers_url: https://envoria.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Ororatech
   city: Munich
   careers_url: https://ororatech.com/career/
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Ark Climate
   city: Munich
   careers_url: https://www.ark-climate.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Inplanet
   city: Munich
   careers_url: https://inplanet.earth/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: NuuEnergy
   city: Munich
   careers_url: https://nuuenergy.de/karriere/
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Delta Charge
   city: Munich
   careers_url: https://www.delta-charge.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Encosa Energy
   city: Munich
   careers_url: https://encosa-energy.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Feldwerke
   city: Munich
   careers_url: https://feldwerke.com/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Zählerfreunde
   city: Munich
   careers_url: https://zaehlerfreunde.com/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: OCELL
   city: Munich
   careers_url: https://ocell.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: TWAICE
   city: Munich
   careers_url: https://www.twaice.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: everdrop
   city: Munich
   careers_url: https://everdrop.de/pages/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: ChargeX
   city: Munich
   careers_url: https://chargex.de/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: The Mobility House
   city: Munich
   careers_url: https://www.mobilityhouse.com/de_de/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Qwello
   city: Munich
   careers_url: https://qwello.de/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: GreenCom Networks
   city: Munich
   careers_url: https://www.greencom-networks.com/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: HeyCharge
   city: Munich
   careers_url: https://heycharge.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Electrochaea
   city: Munich
   careers_url: https://www.electrochaea.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Planet A Foods
   city: Munich
   careers_url: https://planet-a-foods.com/careers
   ats: auto
   board_token: ''
+  assume_local: true
 - name: AMSilk
   city: Munich
   careers_url: https://www.amsilk.com/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Anthesis Group Germany
   city: Munich
   careers_url: https://www.anthesisgroup.com/careers/
@@ -890,6 +923,7 @@ companies:
   careers_url: https://www.eura-ag.com/karriere
   ats: auto
   board_token: ''
+  assume_local: true
 - name: Statkraft Deutschland
   city: Munich
   careers_url: https://www.statkraft.de/karriere/
@@ -905,3 +939,22 @@ companies:
   careers_url: https://www.bund-naturschutz.de/ueber-uns/stellenangebote
   ats: auto
   board_token: ''
+  assume_local: true
+- name: ACCONSIS
+  city: Munich
+  careers_url: https://www.acconsis.de/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: Pina Earth
+  city: Munich
+  careers_url: https://pinateam.notion.site/Work-Pina-Earth-5a6945a900314353b60bdc63ac7492c4
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: Carbon Atlantis (Phlair)
+  city: Munich
+  careers_url: https://www.carbonatlantis.com/careers
+  ats: auto
+  board_token: ''
+  assume_local: true
