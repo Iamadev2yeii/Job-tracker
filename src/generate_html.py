@@ -3,8 +3,13 @@ Turns data/job_tracker.xlsx into a plain, static HTML page at
 docs/index.html, so it can be published via GitHub Pages — one link,
 opens in any browser, no Excel and no download needed.
 
-Single-sheet version — just the "Jobs" (Munich) table, no Dream
-Cities / Swiss / Singapore sections.
+Renders all three sheets, in order:
+  1. "Jobs" — sustainability/ESG-relevant roles in Munich (green
+     highlight for new rows).
+  2. "General Roles" — the broader Munich office/admin fallback
+     sheet, no relevance floor applied (amber highlight for new rows).
+  3. "Remote Sustainability (Europe)" — fully remote ESG roles
+     anywhere in Europe (blue highlight for new rows).
 
 Called automatically at the end of both src/main.py (daily scrape) and
 src/reset_tracker.py (monthly reset), so the page is always in sync
@@ -26,12 +31,17 @@ import yaml
 from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
-from src.tracker import COLUMNS, NEW_ROW_FILL, SHEET_NAME
+from src.tracker import (
+    COLUMNS, NEW_ROW_FILL, GENERAL_NEW_ROW_FILL, REMOTE_NEW_ROW_FILL,
+    SHEET_NAME, GENERAL_SHEET_NAME, REMOTE_SHEET_NAME,
+)
 
 ROOT = Path(__file__).resolve().parent.parent
 TRACKER_FILE = ROOT / "data" / "job_tracker.xlsx"
 OUTPUT_FILE = ROOT / "docs" / "index.html"
 CV_PROFILE_FILE = ROOT / "config" / "cv_profile.yaml"
+GENERAL_ROLES_PROFILE_FILE = ROOT / "config" / "general_roles_profile.yaml"
+REMOTE_SUSTAINABILITY_PROFILE_FILE = ROOT / "config" / "remote_sustainability_profile.yaml"
 
 
 def _rgb_matches(cell, fill) -> bool:
@@ -54,7 +64,7 @@ def _escape(value) -> str:
     )
 
 
-def _render_table(ws: Worksheet | None, empty_message: str) -> tuple[str, int]:
+def _render_table(ws: Worksheet | None, new_row_fill: object, row_class: str, empty_message: str) -> tuple[str, int]:
     """Returns (rows_html, total_row_count)."""
     if ws is None or ws.max_row < 2:
         return f"<tr><td colspan='{len(COLUMNS)}'>{_escape(empty_message)}</td></tr>", 0
@@ -67,7 +77,7 @@ def _render_table(ws: Worksheet | None, empty_message: str) -> tuple[str, int]:
         values = [ws.cell(row=row, column=c).value for c in range(1, len(COLUMNS) + 1)]
         if all(v is None for v in values):
             continue  # skip fully-empty rows
-        is_highlighted = _rgb_matches(ws.cell(row=row, column=1), NEW_ROW_FILL)
+        is_highlighted = _rgb_matches(ws.cell(row=row, column=1), new_row_fill)
         url = values[url_col - 1] or "#"
 
         cells = []
@@ -78,33 +88,71 @@ def _render_table(ws: Worksheet | None, empty_message: str) -> tuple[str, int]:
                 continue  # URL folded into the Job Title link, not shown as its own column
             else:
                 cells.append(f"<td>{_escape(val)}</td>")
-        cls = " class='new-row'" if is_highlighted else ""
+        cls = f" class='{row_class}'" if is_highlighted else ""
         rows_html_parts.append(f"<tr{cls}>{''.join(cells)}</tr>")
 
     rows_html = "\n".join(rows_html_parts) if rows_html_parts else f"<tr><td colspan='{len(COLUMNS)}'>{_escape(empty_message)}</td></tr>"
     return rows_html, len(rows_html_parts)
 
 
+def _section_html(title: str, rows_html: str, total: int, legend_color: str) -> str:
+    display_columns = [c for c in COLUMNS if c != "URL"]
+    header_html = "".join(f"<th>{_escape(c)}</th>" for c in display_columns)
+    return f"""
+<h2>{_escape(title)}</h2>
+<div class="meta">
+  {total} tracked postings &middot;
+  <span class="legend" style="background:{legend_color};"></span>added since your last check
+</div>
+<div class="scroll-wrap">
+<table>
+<thead><tr>{header_html}</tr></thead>
+<tbody>
+{rows_html}
+</tbody>
+</table>
+</div>
+"""
+
+
+def _load_min_score(path: Path) -> int:
+    if not path.exists():
+        return 0
+    with open(path, "r", encoding="utf-8") as f:
+        profile = yaml.safe_load(f) or {}
+    return profile.get("main_min_score", 0)
+
+
 def generate(tracker_path: Path = TRACKER_FILE, output_path: Path = OUTPUT_FILE) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    cv_profile = {}
-    if CV_PROFILE_FILE.exists():
-        with open(CV_PROFILE_FILE, "r", encoding="utf-8") as f:
-            cv_profile = yaml.safe_load(f) or {}
-    min_score = cv_profile.get("main_min_score", 0)
+    min_score = _load_min_score(CV_PROFILE_FILE)
+    general_min_score = _load_min_score(GENERAL_ROLES_PROFILE_FILE)
+    remote_min_score = _load_min_score(REMOTE_SUSTAINABILITY_PROFILE_FILE)
 
-    ws = None
+    ws = general_ws = remote_ws = None
     if tracker_path.exists():
         wb = load_workbook(tracker_path)
         ws = wb[SHEET_NAME] if SHEET_NAME in wb.sheetnames else wb.active
+        general_ws = wb[GENERAL_SHEET_NAME] if GENERAL_SHEET_NAME in wb.sheetnames else None
+        remote_ws = wb[REMOTE_SHEET_NAME] if REMOTE_SHEET_NAME in wb.sheetnames else None
 
-    rows_html, total = _render_table(ws, "No data yet — the scraper hasn't run.")
+    rows_html, total = _render_table(ws, NEW_ROW_FILL, "new-row", "No data yet — the scraper hasn't run.")
+    general_rows_html, general_total = _render_table(
+        general_ws, GENERAL_NEW_ROW_FILL, "general-new-row", "No general/office postings yet."
+    )
+    remote_rows_html, remote_total = _render_table(
+        remote_ws, REMOTE_NEW_ROW_FILL, "remote-new-row", "No remote postings yet."
+    )
 
     title = "Munich ESG / Sustainability Jobs" + (f" (score {min_score}+ only)" if min_score else "")
-    display_columns = [c for c in COLUMNS if c != "URL"]
-    header_html = "".join(f"<th>{_escape(c)}</th>" for c in display_columns)
+    general_title = "General / Office Roles (Munich)" + (f" (score {general_min_score}+ only)" if general_min_score else "")
+    remote_title = "Remote Sustainability (Europe)" + (f" (score {remote_min_score}+ only)" if remote_min_score else "")
     updated = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+    jobs_section = _section_html(title, rows_html, total, "#D1FAE5")
+    general_section = _section_html(general_title, general_rows_html, general_total, "#FDE68A")
+    remote_section = _section_html(remote_title, remote_rows_html, remote_total, "#DBEAFE")
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -123,11 +171,16 @@ def generate(tracker_path: Path = TRACKER_FILE, output_path: Path = OUTPUT_FILE)
   th, td {{ padding: 8px 10px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 0.85rem; vertical-align: top; }}
   th {{ background: #1F2937; color: white; position: sticky; top: 0; white-space: nowrap; }}
   tr.new-row {{ background: #D1FAE5; }}
+  tr.general-new-row {{ background: #FDE68A; }}
+  tr.remote-new-row {{ background: #DBEAFE; }}
   tr:hover {{ background: #f3f4f6; }}
   tr.new-row:hover {{ background: #bbf7d0; }}
+  tr.general-new-row:hover {{ background: #fcd34d; }}
+  tr.remote-new-row:hover {{ background: #bfdbfe; }}
   a {{ color: #2563eb; text-decoration: none; }}
   a:hover {{ text-decoration: underline; }}
   .scroll-wrap {{ overflow-x: auto; margin-bottom: 8px; }}
+  hr {{ border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }}
   @media (max-width: 700px) {{
     th, td {{ font-size: 0.75rem; padding: 6px; }}
     body {{ padding: 8px; }}
@@ -137,19 +190,11 @@ def generate(tracker_path: Path = TRACKER_FILE, output_path: Path = OUTPUT_FILE)
 <body>
 <h1>Job Tracker</h1>
 <div class="page-meta">last updated {updated}</div>
-<h2>{_escape(title)}</h2>
-<div class="meta">
-  {total} tracked postings &middot;
-  <span class="legend" style="background:#D1FAE5;"></span>added since your last check
-</div>
-<div class="scroll-wrap">
-<table>
-<thead><tr>{header_html}</tr></thead>
-<tbody>
-{rows_html}
-</tbody>
-</table>
-</div>
+{jobs_section}
+<hr>
+{general_section}
+<hr>
+{remote_section}
 </body>
 </html>
 """

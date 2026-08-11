@@ -157,6 +157,77 @@ def resolve_munich_match(job: dict[str, Any], search_text: str | None = None, as
     return False
 
 
+# --- Remote / Europe matching, for the "Remote Sustainability
+# (Europe)" sheet — a different question than Munich matching: not
+# "is this in one specific metro area," but "does this posting
+# explicitly say it's remote, and is there nothing ruling out Europe."
+
+REMOTE_KEYWORDS = [
+    "remote", "100% remote", "fully remote", "remote-first", "remote first",
+    "remote-only", "work from anywhere", "distributed team", "telecommute",
+    "home-based", "vollständig remote", "100% homeoffice",
+]
+
+# Phrases that restrict a "remote" role to somewhere outside Europe —
+# these override a REMOTE_KEYWORDS match, since "remote" alone doesn't
+# mean "remote and eligible from Europe."
+NON_EU_ONLY_KEYWORDS = [
+    "us only", "usa only", "u.s. only", "united states only", "us-based only",
+    "us based only", "must be based in the us", "must be based in the united states",
+    "eligible to work in the us", "eligible to work in the united states",
+    "us citizens only", "canada only", "must be based in canada",
+    "apac only", "australia only", "latam only", "latin america only",
+    "india only", "must reside in the us", "us residents only",
+]
+
+
+def remote_eu_status(text: str) -> str:
+    """
+    Returns "confirmed" (explicitly remote, nothing rules out Europe),
+    "mismatch" (explicitly restricted to a non-EU country), or
+    "unconfirmed" (no remote language found at all, or too vague to
+    tell).
+    """
+    if not text:
+        return "unconfirmed"
+    t = text.lower()
+    if any(kw in t for kw in NON_EU_ONLY_KEYWORDS):
+        return "mismatch"
+    if any(kw in t for kw in REMOTE_KEYWORDS):
+        return "confirmed"
+    return "unconfirmed"
+
+
+def resolve_remote_eu_match(job: dict[str, Any], search_text: str | None = None) -> bool:
+    """
+    Decides whether a title-matched job is confirmed remote-and-
+    Europe-eligible. Deliberately strict compared to resolve_munich_match
+    — there's no assume_remote equivalent, since the boards this
+    feeds (config/remote_sustainability_companies.yaml) mix remote,
+    hybrid, on-site, and non-European postings, so a blank location
+    can't be safely assumed to mean "remote in Europe." Only postings
+    that explicitly say "remote" (and don't explicitly rule out
+    Europe) pass.
+    """
+    text = search_text if search_text is not None else job.get("location", "")
+    return remote_eu_status(text) == "confirmed"
+
+
+# Titles signaling entry/early-career level — given a small scoring
+# boost in the remote-Europe pipeline specifically (see
+# _junior_boost), per request to prioritize junior over mid-level
+# without excluding mid-level entirely.
+JUNIOR_KEYWORDS = [
+    "junior", "graduate", "entry level", "entry-level", "associate",
+    "trainee", "early career",
+]
+
+
+def _junior_boost(title: str) -> int:
+    t = title.lower()
+    return 2 if any(kw in t for kw in JUNIOR_KEYWORDS) else 0
+
+
 def extract_location_snippet(text: str, window: int = 30) -> str:
     """
     For a job whose location was recovered from a full page-text blob
@@ -250,15 +321,19 @@ def score_job_1_to_10(description: str, title: str, keywords: list[dict[str, Any
     return max(1, min(10, scaled))
 
 
-def score_jobs(jobs: list[dict[str, Any]], cv_profile: dict[str, Any]) -> list[dict[str, Any]]:
+def score_jobs(jobs: list[dict[str, Any]], cv_profile: dict[str, Any], junior_priority: bool = False) -> list[dict[str, Any]]:
     """Adds relevance_score to every job in place (including a small
-    boost for postings that look recent — see _recency_boost). Does
-    not filter anything out — score is for ranking/sorting only."""
+    boost for postings that look recent — see _recency_boost, and
+    optionally another for junior/entry-level titles — see
+    _junior_boost). Does not filter anything out — score is for
+    ranking/sorting only."""
     keywords = cv_profile.get("scoring_keywords", [])
     ceiling = cv_profile.get("score_ceiling", DEFAULT_SCORE_CEILING)
     today = _dt.date.today()
     for job in jobs:
         base = score_job_1_to_10(job.get("description", ""), job.get("title", ""), keywords, ceiling)
         boost = _recency_boost(job.get("posted_date", ""), today)
+        if junior_priority:
+            boost += _junior_boost(job.get("title", ""))
         job["relevance_score"] = max(1, min(10, base + boost))
     return jobs

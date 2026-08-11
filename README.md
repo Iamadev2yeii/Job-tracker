@@ -28,10 +28,22 @@ roles instead of Project Manager roles.
   and scoring keywords (GHG Protocol, EXIOBASE/EORA, ISAE 3000, Scope
   1/2/3, EU Taxonomy, and your technical toolkit).
 
-Feeds a single `data/job_tracker.xlsx` — one "Jobs" sheet, sorted by
-relevance score (highest first). No score threshold is applied — every
-job matching the title + Munich-area filter is shown, nothing is
-excluded for scoring low.
+Feeds a single `data/job_tracker.xlsx` with **three sheets**:
+
+- **"Jobs"** — sustainability/ESG-relevant roles in Munich, sorted by
+  relevance score (highest first).
+- **"General Roles"** — a deliberately broad fallback sheet: office
+  management, secretarial, administrative assistant, receptionist,
+  and similar roles in Munich, regardless of ESG fit.
+- **"Remote Sustainability (Europe)"** — fully remote ESG/
+  sustainability roles anywhere in Europe (not scoped to Munich),
+  sourced from dedicated climate/ESG job boards. Senior/leadership
+  titles are excluded everywhere, and this sheet specifically gives
+  a small ranking boost to junior/entry-level titles.
+
+No score threshold is applied on any sheet by default — every job
+matching its title + location filter is shown, nothing is excluded
+for scoring low.
 
 **If you have zero GitHub experience, start with `SETUP_GUIDE.md`
 instead of this file** — it walks through every click.
@@ -70,15 +82,29 @@ instead of this file** — it walks through every click.
 - `config/esg_job_boards.yaml` — dedicated ESG/climate job boards
   (NachhaltigeJobs.de, ClimateTechList.com) plus employment agencies
   with a sustainability practice (Randstad, Michael Page, Robert
-  Walters, Hays, LP impact). Much higher hit-rate than any single
-  corporate career page, since everything on these is already
-  sustainability-relevant or explicitly filtered to it. Agency-
-  sourced rows may show the agency's name rather than the real
-  employer — see the comment at the top of the file.
-- `config/cv_profile.yaml` — update if your CV changes, adjust which
-  job titles count as a match, turn a score floor back on via
-  `main_min_score` (0 = off by default), or tune `score_ceiling` if
-  relevance scores cluster too high/low.
+  Walters, Hays, LP impact). Feeds the "Jobs" sheet.
+- `config/general_roles_companies.yaml` — general staffing agencies
+  (Robert Half, Randstad, Adecco, Manpower) and a few smaller Munich
+  creative/communication agencies, specifically for the "General
+  Roles" fallback sheet.
+- `config/cv_profile.yaml` — the sustainability/ESG title list and
+  scoring, feeds the "Jobs" sheet.
+- `config/general_roles_profile.yaml` — the broad office/admin title
+  list, feeds the "General Roles" sheet. No score floor by design.
+
+- `config/remote_sustainability_companies.yaml` — a small set of
+  dedicated remote/EU climate job boards (EuroClimateJobs.com,
+  Climatebase, climate.jobs). Feeds the "Remote Sustainability
+  (Europe)" sheet — scraped separately from the Munich pool.
+- `config/remote_sustainability_profile.yaml` — same field as
+  `cv_profile.yaml`, but for the remote-Europe sheet. No score floor.
+
+Every company in companies.yaml / esg_job_boards.yaml /
+general_roles_companies.yaml is scraped once and checked against
+BOTH the sustainability and general-roles profiles — a posting can
+legitimately show up in both sheets if it matches both title lists.
+The remote-Europe sheet uses its own, separate scrape of the boards
+in remote_sustainability_companies.yaml.
 
 ## How results are prioritized
 

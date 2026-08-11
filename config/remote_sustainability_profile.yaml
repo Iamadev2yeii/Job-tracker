@@ -1,0 +1,81 @@
+# Same field as config/cv_profile.yaml (ESG/Sustainability/Carbon/
+# Climate), reused for the "Remote Sustainability (Europe)" sheet
+# instead of the Munich one. Title list is mostly the English subset
+# of cv_profile.yaml — remote EU/international postings are almost
+# always written in English, so the German-only terms were dropped
+# to keep this list focused; add any back if a specific board turns
+# out to post in German too.
+title_must_match:
+  - "esg"
+  - "sustainability"
+  - "carbon"
+  - "climate"
+  - "environmental"
+  - "csr"
+  - "corporate social responsibility"
+  - "ghg"
+  - "net zero"
+  - "net-zero"
+  - "decarbonization"
+  - "decarbonisation"
+  - "csrd"
+  - "eu taxonomy"
+  - "sustainable finance"
+  - "impact analyst"
+  - "esg analyst"
+  - "esg reporting"
+  - "environmental researcher"
+  - "environmental scientist"
+  - "ehs"
+  - "sustainability coordinator"
+  - "sustainability specialist"
+  - "sustainability associate"
+  - "responsible sourcing"
+  - "supply chain sustainability"
+  - "circular economy"
+  - "biodiversity"
+  - "esg specialist"
+  - "esg coordinator"
+  - "environmental compliance"
+  - "green finance"
+  - "climate risk"
+  - "double materiality"
+  - "carbon accountant"
+  - "program officer"
+  - "project officer"
+  - "environmental engineer"
+  - "environmental analyst"
+  - "regulatory affairs"
+  - "impact assessment"
+
+# No relevance floor — same reasoning as cv_profile.yaml. Score is
+# still computed and used to sort, never to exclude.
+main_min_score: 0
+score_ceiling: 12
+
+scoring_keywords:
+  - {term: "carbon accounting", weight: 3}
+  - {term: "ghg protocol", weight: 3}
+  - {term: "scope 1", weight: 2}
+  - {term: "scope 2", weight: 2}
+  - {term: "scope 3", weight: 2}
+  - {term: "carbon footprint", weight: 2}
+  - {term: "life cycle assessment", weight: 2}
+  - {term: "lca", weight: 1}
+  - {term: "exiobase", weight: 3}
+  - {term: "eora", weight: 2}
+  - {term: "input-output model", weight: 2}
+  - {term: "eeio", weight: 2}
+  - {term: "isae 3000", weight: 3}
+  - {term: "assurance", weight: 1}
+  - {term: "esg", weight: 2}
+  - {term: "csrd", weight: 2}
+  - {term: "eu taxonomy", weight: 2}
+  - {term: "sustainable finance", weight: 2}
+  - {term: "net zero", weight: 2}
+  - {term: "climate risk", weight: 2}
+  - {term: "climate scenario", weight: 2}
+  - {term: "environmental data", weight: 1}
+  - {term: "python", weight: 1}
+  - {term: "reporting", weight: 1}
+  - {term: "data analysis", weight: 1}
