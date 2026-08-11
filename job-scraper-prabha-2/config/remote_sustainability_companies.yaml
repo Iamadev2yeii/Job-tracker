@@ -1,0 +1,44 @@
+# Sources for the "Remote Sustainability (Europe)" sheet — fully
+# remote ESG/sustainability/climate roles anywhere in Europe, not
+# scoped to Munich. Deliberately board-driven rather than individual-
+# company-driven: a handful of dedicated climate/ESG job boards
+# aggregate far more remote-eligible postings than scraping
+# individual company career pages one at a time ever could.
+#
+# All three below are real, verified, dedicated climate/sustainability
+# job boards (not general aggregators):
+#   - EuroClimateJobs.com — climate and energy jobs specifically in
+#     Europe.
+#   - Climatebase.org — the largest climate careers platform
+#     globally (1M+ users/year); lists remote, hybrid, AND on-site
+#     roles worldwide, not just remote-Europe ones.
+#   - climate.jobs — part of the Remote Climate Jobs network; also
+#     mixes remote, hybrid, and on-site postings.
+#
+# Deliberately NOT using assume_local-style "blank location = pass"
+# logic here (unlike companies.yaml / general_roles_companies.yaml):
+# these three boards mix remote, hybrid, on-site, and non-European
+# postings, so a blank location can't be safely assumed to mean
+# "remote and in Europe." Every posting is instead checked for
+# explicit "remote" language and screened against a short list of
+# "restricted to a non-EU country" phrases — see src/matcher.py,
+# REMOTE_KEYWORDS and NON_EU_ONLY_KEYWORDS. Only EuroClimateJobs.com
+# is itself Europe-scoped by construction, but even there, only
+# postings that explicitly say "remote" are kept — an on-site EU
+# role isn't what this sheet is for.
+companies:
+  - name: EuroClimateJobs.com
+    city: Remote
+    careers_url: https://www.euroclimatejobs.com/
+    ats: auto
+    board_token: ""
+  - name: Climatebase (remote)
+    city: Remote
+    careers_url: https://climatebase.org/jobs
+    ats: auto
+    board_token: ""
+  - name: climate.jobs (remote)
+    city: Remote
+    careers_url: https://climate.jobs/
+    ats: auto
+    board_token: ""
