@@ -1,0 +1,75 @@
+# A deliberately BROAD, low-bar profile — not for sustainability fit,
+# but for general office/administrative roles Prabha could realistically
+# get hired for regardless of her ESG background. Feeds the second
+# "General / Office Roles" sheet, not the sustainability "Jobs" sheet.
+#
+# No relevance filtering is applied here on purpose (main_min_score
+# stays 0) — the whole point of this sheet is "can she apply," not
+# "is this her specialty." Scoring still runs (mostly to rank by
+# generic fit — MS Office, languages, organizational skills) but
+# never excludes anything.
+title_must_match:
+  - "office manager"
+  - "office management"
+  - "büromanagement"
+  - "bürokraft"
+  - "bürokauffrau"
+  - "bürokaufmann"
+  - "office administration"
+  - "office coordinator"
+  - "office assistant"
+  - "administrative assistant"
+  - "verwaltungsassistenz"
+  - "verwaltungsfachangestellte"
+  - "verwaltungsangestellte"
+  - "sachbearbeiter"
+  - "sachbearbeiterin"
+  - "receptionist"
+  - "empfang"
+  - "empfangsmitarbeiter"
+  - "empfangskraft"
+  - "front desk"
+  - "secretary"
+  - "sekretärin"
+  - "sekretär"
+  - "sekretariat"
+  - "personal assistant"
+  - "executive assistant"
+  - "assistant to"
+  - "assistenz"
+  - "assistent"
+  - "team assistant"
+  - "teamassistenz"
+  - "kauffrau für büromanagement"
+  - "kaufmann für büromanagement"
+  - "backoffice"
+  - "back office"
+  - "data entry"
+  - "customer service"
+  - "kundenservice"
+  - "kundenbetreuung"
+  - "callcenter"
+  - "call center"
+  - "verwaltung"
+  - "facility management"
+  - "hr assistant"
+  - "personalassistenz"
+
+main_min_score: 0
+score_ceiling: 6
+
+# Light generic scoring — enough to rank, not enough to exclude.
+scoring_keywords:
+  - {term: "ms office", weight: 1}
+  - {term: "microsoft office", weight: 1}
+  - {term: "organisationstalent", weight: 1}
+  - {term: "organized", weight: 1}
+  - {term: "communication", weight: 1}
+  - {term: "kommunikation", weight: 1}
+  - {term: "englisch", weight: 1}
+  - {term: "english", weight: 1}
+  - {term: "deutsch", weight: 1}
+  - {term: "italienisch", weight: 1}
+  - {term: "französisch", weight: 1}
+  - {term: "mehrsprachig", weight: 1}
+  - {term: "multilingual", weight: 1}
