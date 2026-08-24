@@ -63,6 +63,7 @@ ROOT = Path(__file__).resolve().parent.parent
 COMPANIES_FILE = ROOT / "config" / "companies.yaml"
 ESG_JOB_BOARDS_FILE = ROOT / "config" / "esg_job_boards.yaml"
 GENERAL_ROLES_COMPANIES_FILE = ROOT / "config" / "general_roles_companies.yaml"
+BAVARIA_DIRECTORY_COMPANIES_FILE = ROOT / "config" / "bavaria_directory_companies.yaml"
 REMOTE_SUSTAINABILITY_COMPANIES_FILE = ROOT / "config" / "remote_sustainability_companies.yaml"
 CV_PROFILE_FILE = ROOT / "config" / "cv_profile.yaml"
 GENERAL_ROLES_PROFILE_FILE = ROOT / "config" / "general_roles_profile.yaml"
@@ -163,6 +164,7 @@ def scrape_munich_pool(
 
         sustain_matched, sustain_stats = _process_profile(
             raw_jobs, cv_profile, name, resolve_munich_match, {"assume_local": assume_local}, log_diag=True,
+            junior_priority=True,
         )
         general_matched, general_stats = _process_profile(
             raw_jobs, general_profile, name, resolve_munich_match, {"assume_local": assume_local}, log_diag=False,
@@ -244,6 +246,8 @@ def run() -> None:
         companies = companies + load_yaml(ESG_JOB_BOARDS_FILE)["companies"]
     if GENERAL_ROLES_COMPANIES_FILE.exists():
         companies = companies + load_yaml(GENERAL_ROLES_COMPANIES_FILE)["companies"]
+    if BAVARIA_DIRECTORY_COMPANIES_FILE.exists():
+        companies = companies + load_yaml(BAVARIA_DIRECTORY_COMPANIES_FILE)["companies"]
 
     sustainability_jobs, general_jobs, munich_counts = scrape_munich_pool(companies, cv_profile, general_profile)
 

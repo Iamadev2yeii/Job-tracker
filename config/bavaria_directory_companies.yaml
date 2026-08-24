@@ -1,0 +1,851 @@
+# Munich-metro-area companies imported from a broader Bavaria-wide
+# business directory the user uploaded (1,325 companies total, mostly
+# small local trades scattered across all of Bavaria — carpenters,
+# cleaners, water utilities, bakeries, etc.). Filtered down to just
+# the 165 with BOTH a Munich-metro address AND a verified own-domain
+# website (17 more were dropped for pointing to a third-party
+# directory/aggregator site instead of their own — e.g. backinjob.de,
+# infobel.com — which would just scrape generic directory content,
+# not that company's actual jobs).
+#
+# Deliberately NOT hand-sorted by sector/relevance: this batch is
+# mostly small local businesses (facility services, construction,
+# hospitality, manufacturing) with little inherent connection to
+# sustainability — but every company here still gets checked against
+# BOTH the sustainability and general-roles title lists like
+# everything else in the Munich pool, so nothing irrelevant reaches
+# either sheet; a company simply won't match if it has no ESG-titled
+# or admin-titled opening. Kept as their own file so this large,
+# unvetted batch is easy to remove or reduce later without touching
+# the carefully curated companies.yaml.
+#
+# careers_url is a best-effort "<domain>/karriere" guess for every
+# entry (same convention used throughout this project) — many of
+# these very small companies won't have a structured careers page at
+# all, so a high EMPTY rate here is expected, not a bug.
+companies:
+- name: ABRAXA Gebäudereinigungs- und Service GmbH
+  city: Munich
+  careers_url: https://abraxa.de/karriere
+  ats: auto
+  board_token: ''
+- name: ADAR GmbH
+  city: Munich
+  careers_url: https://adargmbh.de/karriere
+  ats: auto
+  board_token: ''
+- name: AdvaStay by KING's
+  city: Munich
+  careers_url: https://kingshotels.de/karriere
+  ats: auto
+  board_token: ''
+- name: AeroGround Flughafen München GmbH
+  city: Munich
+  careers_url: https://munich-airport.de/karriere
+  ats: auto
+  board_token: ''
+- name: AEROMARITIME Systembau GmbH
+  city: Munich
+  careers_url: https://aeromaritimegroup.com/karriere
+  ats: auto
+  board_token: ''
+- name: AICHER GROUP GmbH & Co. KG
+  city: Munich
+  careers_url: https://aicher-ambulanz.de/karriere
+  ats: auto
+  board_token: ''
+- name: Ajeti Gebäudeservice
+  city: Munich
+  careers_url: https://ajeti.de/karriere
+  ats: auto
+  board_token: ''
+- name: Albert Schnell GmbH
+  city: Munich
+  careers_url: https://opel-schnell-oberhaching.de/karriere
+  ats: auto
+  board_token: ''
+- name: Alfa Bau & Service GmbH
+  city: Munich
+  careers_url: https://ratington.de/karriere
+  ats: auto
+  board_token: ''
+- name: Amper Gebäudeservice UG
+  city: Munich
+  careers_url: https://hausmeisterdienste.net/karriere
+  ats: auto
+  board_token: ''
+- name: Anjo Malerei GmbH
+  city: Munich
+  careers_url: https://anjo.de/karriere
+  ats: auto
+  board_token: ''
+- name: Anton Gansneder GmbH
+  city: Munich
+  careers_url: https://zimmerei-gansneder.de/karriere
+  ats: auto
+  board_token: ''
+- name: Aqua-Concept Gesellschaft für Wasserbehandlung mbH
+  city: Munich
+  careers_url: https://aqua-concept-gmbh.eu/karriere
+  ats: auto
+  board_token: ''
+- name: Arqum GmbH
+  city: Munich
+  careers_url: https://arqum.de/karriere
+  ats: auto
+  board_token: ''
+- name: Aschbacher Hof
+  city: Munich
+  careers_url: https://aschbacher-hof.de/karriere
+  ats: auto
+  board_token: ''
+- name: ASMPT
+  city: Munich
+  careers_url: https://smt.asmpt.com/karriere
+  ats: auto
+  board_token: ''
+- name: August Weber Gebäudereinigung GmbH
+  city: Munich
+  careers_url: https://august-weber.de/karriere
+  ats: auto
+  board_token: ''
+- name: Augustiner-Bräu Wagner KG
+  city: Munich
+  careers_url: https://augustiner-braeu.de/karriere
+  ats: auto
+  board_token: ''
+- name: AVANTI Service GmbH
+  city: Munich
+  careers_url: https://avanti-reinigung.de/karriere
+  ats: auto
+  board_token: ''
+- name: Bayerisches Dachdeckerhandwerk - Landesinnungsverband
+  city: Munich
+  careers_url: https://dachdecker.bayern/karriere
+  ats: auto
+  board_token: ''
+- name: BayernFM
+  city: Munich
+  careers_url: https://bayern-facility-management.de/karriere
+  ats: auto
+  board_token: ''
+- name: BAYONIX Stefan Hunger
+  city: Munich
+  careers_url: https://bayonix.com/karriere
+  ats: auto
+  board_token: ''
+- name: Betz-Chrom GmbH
+  city: Munich
+  careers_url: https://betz-chrom.de/karriere
+  ats: auto
+  board_token: ''
+- name: Bewachungsdienst Dipl.-Kfm. Helmut Ehrl GmbH
+  city: Munich
+  careers_url: https://ehrl-sicherheit.com/karriere
+  ats: auto
+  board_token: ''
+- name: Bischof Oliver
+  city: Munich
+  careers_url: https://xn--komplettsanierungen-mnchen-j0c.de/karriere
+  ats: auto
+  board_token: ''
+- name: blitz-blank Gebäudereinigung GmbH
+  city: Munich
+  careers_url: https://xn--gebudereiniger-sdbayern-x7b72d.de/karriere
+  ats: auto
+  board_token: ''
+- name: BMW AG Werk München
+  city: Munich
+  careers_url: https://sfv-muenchen.de/karriere
+  ats: auto
+  board_token: ''
+- name: Brauerei Aying Franz Inselkammer KG
+  city: Munich
+  careers_url: https://brauerei-ayinger.de/karriere
+  ats: auto
+  board_token: ''
+- name: Braun Entsorgung GmbH
+  city: Munich
+  careers_url: https://braun-entsorgung.de/karriere
+  ats: auto
+  board_token: ''
+- name: BT Facility Management GmbH
+  city: Munich
+  careers_url: https://bt-facility.de/karriere
+  ats: auto
+  board_token: ''
+- name: C.Bada Gebäudereinigung
+  city: Munich
+  careers_url: https://c-bada-reinigung.com/karriere
+  ats: auto
+  board_token: ''
+- name: Daily Shine GmbH Gebäudereinigung München
+  city: Munich
+  careers_url: https://dailyshine.de/karriere
+  ats: auto
+  board_token: ''
+- name: DelikatesseLn GmbH
+  city: Munich
+  careers_url: https://delikatesseln.de/karriere
+  ats: auto
+  board_token: ''
+- name: Dezza Dienstleistung UG
+  city: Munich
+  careers_url: https://dezza.de/karriere
+  ats: auto
+  board_token: ''
+- name: diakonia Dienstleistungsbetriebe GmbH
+  city: Munich
+  careers_url: https://diakonia.de/karriere
+  ats: auto
+  board_token: ''
+- name: Distec
+  city: Munich
+  careers_url: https://pressebox.de/karriere
+  ats: auto
+  board_token: ''
+- name: DONE electronics GmbH
+  city: Munich
+  careers_url: https://done.de/karriere
+  ats: auto
+  board_token: ''
+- name: Dr. Hoffmann Facility Services Group GmbH
+  city: Munich
+  careers_url: https://drhoffmann.eu/karriere
+  ats: auto
+  board_token: ''
+- name: Dr. Rettler Service GmbH
+  city: Munich
+  careers_url: https://rettler.de/karriere
+  ats: auto
+  board_token: ''
+- name: DR.SCHNELL GmbH & Co.KGaA
+  city: Munich
+  careers_url: https://dr-schnell.com/karriere
+  ats: auto
+  board_token: ''
+- name: Druckerei Gebr. Bremberger GmbH & Co. KG
+  city: Munich
+  careers_url: https://bremberger.de/karriere
+  ats: auto
+  board_token: ''
+- name: EMC Home of Data GmbH
+  city: Munich
+  careers_url: https://emc-homeofdata.de/karriere
+  ats: auto
+  board_token: ''
+- name: Epson Europe Electronics GmbH
+  city: Munich
+  careers_url: https://epson-electronics.de/karriere
+  ats: auto
+  board_token: ''
+- name: EURATECH GmbH
+  city: Munich
+  careers_url: https://euratech.de/karriere
+  ats: auto
+  board_token: ''
+- name: EVIT GmbH
+  city: Munich
+  careers_url: https://onlinestreet.de/karriere
+  ats: auto
+  board_token: ''
+- name: Festhalle Schottenhamel GmbH & Co. OHG
+  city: Munich
+  careers_url: https://festhalle-schottenhamel.de/karriere
+  ats: auto
+  board_token: ''
+- name: FEV EVA GmbH
+  city: Munich
+  careers_url: https://fev-eva.com/karriere
+  ats: auto
+  board_token: ''
+- name: Fiederer Gebäudemanagement
+  city: Munich
+  careers_url: https://fiederer-gmbh.de/karriere
+  ats: auto
+  board_token: ''
+- name: Flughafen München GmbH
+  city: Munich
+  careers_url: https://munich-airport.de/karriere
+  ats: auto
+  board_token: ''
+- name: Frank Zimmerei und Holzbau GmbH & Co. KG
+  city: Munich
+  careers_url: https://zimmereifrank.de/karriere
+  ats: auto
+  board_token: ''
+- name: Franz Wolf Kunststoffverarbeitung GmbH
+  city: Munich
+  careers_url: https://kirchheim-schwaben.de/karriere
+  ats: auto
+  board_token: ''
+- name: Gastro Kaever
+  city: Munich
+  careers_url: https://bizdb.de/karriere
+  ats: auto
+  board_token: ''
+- name: GBH-Gesellschaft für Baustoff-Aufbereitung und Handel mbh
+  city: Munich
+  careers_url: https://gbh-recycling.de/karriere
+  ats: auto
+  board_token: ''
+- name: Gebäudereinigung CleanSpot
+  city: Munich
+  careers_url: https://clean-spot.de/karriere
+  ats: auto
+  board_token: ''
+- name: Gebäudereinigung Peukert
+  city: Munich
+  careers_url: https://peukert-online.de/karriere
+  ats: auto
+  board_token: ''
+- name: Gebäudetechnik Planung München
+  city: Munich
+  careers_url: https://gtp-m.de/karriere
+  ats: auto
+  board_token: ''
+- name: GEBRÜDER PETERS München GmbH
+  city: Munich
+  careers_url: https://gebrueder-peters.de/karriere
+  ats: auto
+  board_token: ''
+- name: Georg Rieger
+  city: Munich
+  careers_url: https://wochenanzeiger.de/karriere
+  ats: auto
+  board_token: ''
+- name: GFM Bau- und Umweltingenieure GmbH
+  city: Munich
+  careers_url: https://gfm-ingenieure.de/karriere
+  ats: auto
+  board_token: ''
+- name: GLISS Gebäude-Service GmbH
+  city: Munich
+  careers_url: https://gliss-service.de/karriere
+  ats: auto
+  board_token: ''
+- name: Gotteswinter und Fibo Druck- und Verlags GmbH
+  city: Munich
+  careers_url: https://gfdruck.de/karriere
+  ats: auto
+  board_token: ''
+- name: Graf-Dichtungen GmbH
+  city: Munich
+  careers_url: https://graf-dichtungen.de/karriere
+  ats: auto
+  board_token: ''
+- name: Grüne Welle Kommunikation
+  city: Munich
+  careers_url: https://gruenewellepr.de/karriere
+  ats: auto
+  board_token: ''
+- name: H&G GmbH
+  city: Munich
+  careers_url: https://h-und-g.eu/karriere
+  ats: auto
+  board_token: ''
+- name: Hair Kaiser Christian Kaiser
+  city: Munich
+  careers_url: https://hair-kaiser.de/karriere
+  ats: auto
+  board_token: ''
+- name: Hauser Robert, Kaminkehrermeisterbetriebermeister
+  city: Munich
+  careers_url: https://hwk-muenchen.de/karriere
+  ats: auto
+  board_token: ''
+- name: HAWE Hydraulik SE
+  city: Munich
+  careers_url: https://hawe.com/karriere
+  ats: auto
+  board_token: ''
+- name: Hay Clean München GmbH
+  city: Munich
+  careers_url: https://hausmeisterdienste.net/karriere
+  ats: auto
+  board_token: ''
+- name: Herbert Widmann GmbH
+  city: Munich
+  careers_url: https://taufkirchen.defirmenkataloge.com/karriere
+  ats: auto
+  board_token: ''
+- name: Herrmann & Schmidt Dienstleistungen
+  city: Munich
+  careers_url: https://herrmannundschmidt.de/karriere
+  ats: auto
+  board_token: ''
+- name: himolla Polstermöbel GmbH
+  city: Munich
+  careers_url: https://himolla.com/karriere
+  ats: auto
+  board_token: ''
+- name: Höcht, Werner Bevollmächtigter Bezirksschornsteinfeger
+  city: Munich
+  careers_url: https://govdata.de/karriere
+  ats: auto
+  board_token: ''
+- name: Höhenrainer Delikatessen GmbH
+  city: Munich
+  careers_url: https://hoehenrainer.de/karriere
+  ats: auto
+  board_token: ''
+- name: Hotel - Gasthof zur Mühle GmbH
+  city: Munich
+  careers_url: https://hotel-muehle.de/karriere
+  ats: auto
+  board_token: ''
+- name: Hotel- & Wirtshaus Jagdschloss
+  city: Munich
+  careers_url: https://die-inge.de/karriere
+  ats: auto
+  board_token: ''
+- name: Hotel Altperlach Betriebs GmbH
+  city: Munich
+  careers_url: https://muenchen.branchen-info.net/karriere
+  ats: auto
+  board_token: ''
+- name: Hotel Gasthof Schäfflerwirt
+  city: Munich
+  careers_url: https://schafflerwirt.de/karriere
+  ats: auto
+  board_token: ''
+- name: Hotel Hachinger Hof
+  city: Munich
+  careers_url: https://hachinger-hof.de/karriere
+  ats: auto
+  board_token: ''
+- name: Hotel Seitner Hof
+  city: Munich
+  careers_url: https://seitnerhof.de/karriere
+  ats: auto
+  board_token: ''
+- name: HVK Eching GmbH & Co. KG
+  city: Munich
+  careers_url: https://hausverwaltung-krimmer.de/karriere
+  ats: auto
+  board_token: ''
+- name: HWR-CHEMIE GmbH
+  city: Munich
+  careers_url: https://hwr-chemie.de/karriere
+  ats: auto
+  board_token: ''
+- name: ibidi GmbH
+  city: Munich
+  careers_url: https://ibidi.com/karriere
+  ats: auto
+  board_token: ''
+- name: Inova Clean GmbH
+  city: Munich
+  careers_url: https://sellwerk.de/karriere
+  ats: auto
+  board_token: ''
+- name: Isar Kliniken GmbH
+  city: Munich
+  careers_url: https://isarklinikum.de/karriere
+  ats: auto
+  board_token: ''
+- name: JJ Sustainability
+  city: Munich
+  careers_url: https://jj-sustainability.de/karriere
+  ats: auto
+  board_token: ''
+- name: Kaspar Werner GmbH & Co. KG
+  city: Munich
+  careers_url: https://kaspar-werner.de/karriere
+  ats: auto
+  board_token: ''
+- name: Kevin Kraus Schaustellerbetrieb
+  city: Munich
+  careers_url: https://schaustellerbetrieb-kraus.de/karriere
+  ats: auto
+  board_token: ''
+- name: KING's HOTEL Center Inh. H. King e.K.
+  city: Munich
+  careers_url: https://kingshotels.de/karriere
+  ats: auto
+  board_token: ''
+- name: KING's HOTEL First Hotelbetriebsges. King mbH
+  city: Munich
+  careers_url: https://kingshotels.de/karriere
+  ats: auto
+  board_token: ''
+- name: Kurz & Klein GmbH
+  city: Munich
+  careers_url: https://kurzundklein.gmbh/karriere
+  ats: auto
+  board_token: ''
+- name: Landesverband der steuerberatenden und wirtschaftsprüfenden Berufe in Bayern e. V.
+  city: Munich
+  careers_url: https://lswb.bayern/karriere
+  ats: auto
+  board_token: ''
+- name: LaSelva Toskana Feinkost Vertriebs GmbH
+  city: Munich
+  careers_url: https://laselva.bio/karriere
+  ats: auto
+  board_token: ''
+- name: Leanflex Organisation und Logistik
+  city: Munich
+  careers_url: https://leanflex.de/karriere
+  ats: auto
+  board_token: ''
+- name: LederGlück Manufaktur
+  city: Munich
+  careers_url: https://blania-ledershop.de/karriere
+  ats: auto
+  board_token: ''
+- name: LfA Förderbank Bayern
+  city: Munich
+  careers_url: https://lfa.de/karriere
+  ats: auto
+  board_token: ''
+- name: Lothar Thalmair GmbH & Co. KG
+  city: Munich
+  careers_url: https://hotel-thalmair.de/karriere
+  ats: auto
+  board_token: ''
+- name: Ludwig Stocker Hofpfisterei GmbH
+  city: Munich
+  careers_url: https://hofpfisterei.de/karriere
+  ats: auto
+  board_token: ''
+- name: Luna Glanz GmbH & Co. KG
+  city: Munich
+  careers_url: https://luna-glanz.de/karriere
+  ats: auto
+  board_token: ''
+- name: MAG ONE GmbH
+  city: Munich
+  careers_url: https://magone-gmbh.com/karriere
+  ats: auto
+  board_token: ''
+- name: Malermeister Metsch GmbH
+  city: Munich
+  careers_url: https://metsch.md-solution.de/karriere
+  ats: auto
+  board_token: ''
+- name: Masterclean Facility Services GmbH
+  city: Munich
+  careers_url: https://masterclean-group.com/karriere
+  ats: auto
+  board_token: ''
+- name: Max Kiener Zimmerei GmbH
+  city: Munich
+  careers_url: https://zimmerei-kiener.de/karriere
+  ats: auto
+  board_token: ''
+- name: Max Rischart´s Backhaus
+  city: Munich
+  careers_url: https://rischart.de/karriere
+  ats: auto
+  board_token: ''
+- name: MKT Krankentransport Schmitt / Obermeier OHG
+  city: Munich
+  careers_url: https://mkt-krankentransport.de/karriere
+  ats: auto
+  board_token: ''
+- name: MKT Rettungsdienst / Katastrophenschutz gGmbH
+  city: Munich
+  careers_url: https://mkt-krankentransport.de/karriere
+  ats: auto
+  board_token: ''
+- name: MKT-Institut für Notfallmedizin- und Katastrophenschutzausbildung in Bayern gGmbH
+  city: Munich
+  careers_url: https://openregister.de/karriere
+  ats: auto
+  board_token: ''
+- name: Mona Lisl
+  city: Munich
+  careers_url: https://monalisl.com/karriere
+  ats: auto
+  board_token: ''
+- name: mr. service Facility Management GmbH
+  city: Munich
+  careers_url: https://mr-service.gmbh/karriere
+  ats: auto
+  board_token: ''
+- name: Münchener Gebäudereinigung K.E. Müller GmbH
+  city: Munich
+  careers_url: https://xn--gebudereiniger-sdbayern-x7b72d.de/karriere
+  ats: auto
+  board_token: ''
+- name: Munich Electrification GmbH
+  city: Munich
+  careers_url: https://munichelectrification.com/karriere
+  ats: auto
+  board_token: ''
+- name: Nelhiebel Elektrotechnik
+  city: Munich
+  careers_url: https://nelhiebel.de/karriere
+  ats: auto
+  board_token: ''
+- name: NeoServ
+  city: Munich
+  careers_url: https://neoserv.de/karriere
+  ats: auto
+  board_token: ''
+- name: Öko Bäckerei Konditorei Mauerer GmbH
+  city: Munich
+  careers_url: https://mauerer.de/karriere
+  ats: auto
+  board_token: ''
+- name: Personites
+  city: Munich
+  careers_url: https://personites.de/karriere
+  ats: auto
+  board_token: ''
+- name: Phönix Skeljo GmbH
+  city: Munich
+  careers_url: https://phoenix-skeljo.de/karriere
+  ats: auto
+  board_token: ''
+- name: PricewaterhouseCoopers GmbH WPG
+  city: Munich
+  careers_url: https://pwc.de/karriere
+  ats: auto
+  board_token: ''
+- name: Pulte GmbH & Co. KG
+  city: Munich
+  careers_url: https://pulte.de/karriere
+  ats: auto
+  board_token: ''
+- name: RIWA Display GmbH
+  city: Munich
+  careers_url: https://riwa-display.de/karriere
+  ats: auto
+  board_token: ''
+- name: RKW Bayern Rationalisierungs- und Innovationszentrum der Bayerischen Wirtschaft e.V.
+  city: Munich
+  careers_url: https://rkwbayern.de/karriere
+  ats: auto
+  board_token: ''
+- name: Rohde & Schwarz  Werk München
+  city: Munich
+  careers_url: https://xn--mnchen-news-thb.com/karriere
+  ats: auto
+  board_token: ''
+- name: ROHPROG GmbH
+  city: Munich
+  careers_url: https://rohprog.de/karriere
+  ats: auto
+  board_token: ''
+- name: Romanow GmbH
+  city: Munich
+  careers_url: https://maler-romanow.de/karriere
+  ats: auto
+  board_token: ''
+- name: Ryosan Europe GmbH
+  city: Munich
+  careers_url: https://marktplatz-mittelstand.de/karriere
+  ats: auto
+  board_token: ''
+- name: Sahit Klaiqi Objektmanagement
+  city: Munich
+  careers_url: https://klaiqi-rvo.de/karriere
+  ats: auto
+  board_token: ''
+- name: Saral ug
+  city: Munich
+  careers_url: https://saral-ug.com/karriere
+  ats: auto
+  board_token: ''
+- name: sayao
+  city: Munich
+  careers_url: https://sayao.de/karriere
+  ats: auto
+  board_token: ''
+- name: Schicht GmbH WasserAufbereitungsTechnik
+  city: Munich
+  careers_url: https://schicht.com/karriere
+  ats: auto
+  board_token: ''
+- name: Schume, Malereibetrieb
+  city: Munich
+  careers_url: https://malerbetrieb-schume.de/karriere
+  ats: auto
+  board_token: ''
+- name: Schwarzbau GmbH
+  city: Munich
+  careers_url: https://schwarzbau.gmbh/karriere
+  ats: auto
+  board_token: ''
+- name: SEW Stromversorgungs-GmbH
+  city: Munich
+  careers_url: https://sewerding.de/karriere
+  ats: auto
+  board_token: ''
+- name: Sky Company GmbH
+  city: Munich
+  careers_url: https://sky-company.de/karriere
+  ats: auto
+  board_token: ''
+- name: SLR-Gebäudereinigung Lisa Roth
+  city: Munich
+  careers_url: https://slr-gebaeudereinigung.de/karriere
+  ats: auto
+  board_token: ''
+- name: Spinner
+  city: Munich
+  careers_url: https://spinner-group.com/karriere
+  ats: auto
+  board_token: ''
+- name: S-POWER Solarkonzept
+  city: Munich
+  careers_url: https://photovoltaik-vergleichsrechner.de/karriere
+  ats: auto
+  board_token: ''
+- name: Staufer Textilpflege GmbH
+  city: Munich
+  careers_url: https://dbl-staufer.de/karriere
+  ats: auto
+  board_token: ''
+- name: Sterr & Achternbusch
+  city: Munich
+  careers_url: https://waescherei-sterr.de/karriere
+  ats: auto
+  board_token: ''
+- name: Stey H. und Söhne GbR
+  city: Munich
+  careers_url: https://firmastey.de/karriere
+  ats: auto
+  board_token: ''
+- name: STM Stahl Vertriebs GmbH
+  city: Munich
+  careers_url: https://stm-stahl.de/karriere
+  ats: auto
+  board_token: ''
+- name: Strässer & Reitmeir GmbH
+  city: Munich
+  careers_url: https://straesser-reitmeir.de/karriere
+  ats: auto
+  board_token: ''
+- name: Studiosus Reisen München GmbH
+  city: Munich
+  careers_url: https://studiosus.com/karriere
+  ats: auto
+  board_token: ''
+- name: SV Business Catering GmbH
+  city: Munich
+  careers_url: https://sv-group.com/karriere
+  ats: auto
+  board_token: ''
+- name: SWM - Stadtwerke München GmbH
+  city: Munich
+  careers_url: https://swm.de/karriere
+  ats: auto
+  board_token: ''
+- name: Team Konzept Facility Services GmbH
+  city: Munich
+  careers_url: https://teamkonzept.com/karriere
+  ats: auto
+  board_token: ''
+- name: Texas Instruments Deutschland GmbH
+  city: Munich
+  careers_url: https://bayern-innovativ.de/karriere
+  ats: auto
+  board_token: ''
+- name: Th. Seebacher GmbH
+  city: Munich
+  careers_url: https://seebacher-service.de/karriere
+  ats: auto
+  board_token: ''
+- name: Thalhammer GmbH
+  city: Munich
+  careers_url: https://thalhammer-gmbh.de/karriere
+  ats: auto
+  board_token: ''
+- name: Timehouse Betreiber GmbH & Co. KG
+  city: Munich
+  careers_url: https://timehouse.de/karriere
+  ats: auto
+  board_token: ''
+- name: TIP Trailer Services Germany
+  city: Munich
+  careers_url: https://tip-group.com/karriere
+  ats: auto
+  board_token: ''
+- name: TM Ausbau
+  city: Munich
+  careers_url: https://tm-ausbau.eu/karriere
+  ats: auto
+  board_token: ''
+- name: United Initiators GmbH
+  city: Munich
+  careers_url: https://united-initiators.com/karriere
+  ats: auto
+  board_token: ''
+- name: Valier Steuerberatungsgesellschaft mbH
+  city: Munich
+  careers_url: https://valier-stb.de/karriere
+  ats: auto
+  board_token: ''
+- name: veda gmbh
+  city: Munich
+  careers_url: https://veda.net/karriere
+  ats: auto
+  board_token: ''
+- name: Verband der Bayerischen Entsorgungsunternehmen e.V.
+  city: Munich
+  careers_url: https://unternehmensauskunft.com/karriere
+  ats: auto
+  board_token: ''
+- name: Verband der Chemischen Industrie e.V. (VCI) - Landesverband Bayern
+  city: Munich
+  careers_url: https://bayerische-chemieverbaende.de/karriere
+  ats: auto
+  board_token: ''
+- name: Victor's Residenz-Hotel München GmbH
+  city: Munich
+  careers_url: https://victors.de/karriere
+  ats: auto
+  board_token: ''
+- name: VIP Chem. Reinigung GmbH
+  city: Munich
+  careers_url: https://marktplatz-mittelstand.de/karriere
+  ats: auto
+  board_token: ''
+- name: Viva-Deluxe GmbH Gebäudeservice
+  city: Munich
+  careers_url: https://viva-deluxe-reinigung.de/karriere
+  ats: auto
+  board_token: ''
+- name: Wald und Wiese, Kaminkehrermeisterbetrieb
+  city: Munich
+  careers_url: https://handwerk365.com/karriere
+  ats: auto
+  board_token: ''
+- name: Weiss Dienstleistungen GmbH
+  city: Munich
+  careers_url: https://weissdienstleistungen.de/karriere
+  ats: auto
+  board_token: ''
+- name: Werner Garten- und Landschaftsbau GmbH
+  city: Munich
+  careers_url: https://werner-muc.de/karriere
+  ats: auto
+  board_token: ''
+- name: Werner GmbH & Co. Straßenreinigung KG
+  city: Munich
+  careers_url: https://werner-muc.de/karriere
+  ats: auto
+  board_token: ''
+- name: Wittmann Entsorgungswirtschaft GmbH
+  city: Munich
+  careers_url: https://wittmann.de/karriere
+  ats: auto
+  board_token: ''
+- name: WSE - Wittmann Sonderabfall Entsorgung GmbH
+  city: Munich
+  careers_url: https://wse-entsorgt.de/karriere
+  ats: auto
+  board_token: ''
+- name: WWD Dienstleistung GmbH
+  city: Munich
+  careers_url: https://wwd-sicherheit.de/karriere
+  ats: auto
+  board_token: ''
+- name: Zimmerei Leopold Göring
+  city: Munich
+  careers_url: https://zimmerei-goering.de/karriere
+  ats: auto
+  board_token: ''

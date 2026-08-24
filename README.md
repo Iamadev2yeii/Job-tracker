@@ -87,6 +87,11 @@ instead of this file** — it walks through every click.
   (Robert Half, Randstad, Adecco, Manpower) and a few smaller Munich
   creative/communication agencies, specifically for the "General
   Roles" fallback sheet.
+- `config/bavaria_directory_companies.yaml` — 165 Munich-metro-area
+  companies imported from a broader Bavaria-wide business directory
+  (mostly small local businesses, not sustainability-specific). Feeds
+  both sheets like everything else in the Munich pool — kept in its
+  own file since it's a large, unvetted batch, easy to trim later.
 - `config/cv_profile.yaml` — the sustainability/ESG title list and
   scoring, feeds the "Jobs" sheet.
 - `config/general_roles_profile.yaml` — the broad office/admin title
@@ -110,9 +115,14 @@ in remote_sustainability_companies.yaml.
 
 - **Seniority**: postings with clear senior/leadership titles
   (Senior, Head of, Director, VP, Chief, Teamleiter, etc.) are
-  excluded — the search targets associate/mid/junior roles. Plain
-  "Manager" titles are NOT excluded, since in German/EU postings
-  that's a standard mid-level title, not "senior manager."
+  excluded — the search targets associate/mid/junior/internship
+  roles. Plain "Manager" titles are NOT excluded, since in German/EU
+  postings that's a standard mid-level title, not "senior manager."
+- **Internships**: not a separate category — a Praktikum/Werkstudent/
+  Internship posting lands wherever its own title already would
+  (an ESG-titled internship in "Jobs," an office-titled one in
+  "General Roles"), and gets the same junior/entry-level ranking
+  boost as any other junior title in that sheet.
 - **Recency**: postings that look 21 days old or newer (when the
   platform exposes a date at all) get a small score boost, so they
   sort nearer the top. Undated postings are neither boosted nor

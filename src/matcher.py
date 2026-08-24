@@ -219,7 +219,8 @@ def resolve_remote_eu_match(job: dict[str, Any], search_text: str | None = None)
 # without excluding mid-level entirely.
 JUNIOR_KEYWORDS = [
     "junior", "graduate", "entry level", "entry-level", "associate",
-    "trainee", "early career",
+    "trainee", "early career", "intern", "internship", "praktikum",
+    "praktikant",
 ]
 
 
