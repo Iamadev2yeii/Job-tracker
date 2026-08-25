@@ -576,6 +576,87 @@ def _maybe_headless_upgrade(company_name: str, careers_url: str, current_result:
 
 
 # --------------------------------------------------------------------------
+# Bundesagentur für Arbeit — Jobsuche API
+# --------------------------------------------------------------------------
+# Germany's Federal Employment Agency runs the country's largest job
+# database and exposes it through a real, documented JSON REST API —
+# not a website that needs scraping. There's no developer registration
+# or account required; the client ID below ("jobboerse-jobsuche") is
+# the same one the agency's own public jobsuche website uses in the
+# browser, and is openly published as the correct way to use this
+# public data by the bundesAPI open-government-data community
+# (https://github.com/bundesAPI/jobsuche-api). This is a fundamentally
+# more reliable path than HTML scraping — structured JSON, no anti-bot
+# measures, no fragile page-layout guessing — and, unlike LinkedIn or
+# XING, nothing here is prohibited by any terms of service.
+_ARBEITSAGENTUR_API_KEY = "jobboerse-jobsuche"
+
+
+def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
+    """
+    For an `ats: arbeitsagentur_api` company entry, `careers_url` is a
+    complete, pre-built query against the Jobsuche API's /pc/v6/jobs
+    endpoint (e.g. "...?was=Nachhaltigkeit&wo=M%C3%BCnchen&umkreis=30")
+    — see config/arbeitsagentur_searches.yaml for the actual searches
+    in use. page/size are appended here if the config didn't already
+    include them, so every search entry doesn't have to repeat them.
+
+    Unlike every other scraper in this file, the API already tells us
+    the REAL hiring employer for each posting (the "arbeitgeber"
+    field) — a genuine advantage over agency-style sources that only
+    ever show the agency's own name. main.py preserves that instead of
+    overwriting it with the search entry's own display name.
+    """
+    url = careers_url
+    if "size=" not in url:
+        url += ("&" if "?" in url else "?") + "size=100"
+    if "page=" not in url:
+        url += "&page=0"
+
+    try:
+        resp = requests.get(
+            url,
+            headers={**HEADERS, "X-API-Key": _ARBEITSAGENTUR_API_KEY, "Accept": "application/json"},
+            timeout=TIMEOUT,
+        )
+        if resp.status_code >= 400:
+            logger.warning("GET %s -> HTTP %s", url, resp.status_code)
+            return []
+        data = resp.json()
+    except (requests.RequestException, ValueError) as exc:
+        logger.warning("GET %s failed: %s", url, exc)
+        return []
+
+    jobs = []
+    for posting in data.get("stellenangebote", []):
+        # Field names have shifted across API versions (refnr vs
+        # referenznummer) — check both defensively.
+        refnr = posting.get("referenznummer") or posting.get("refnr") or ""
+        arbeitsort = posting.get("arbeitsort") or {}
+        ort = (arbeitsort.get("ort") or "").strip()
+        plz = (arbeitsort.get("plz") or "").strip()
+        location = f"{plz} {ort}".strip()
+
+        # Prefer the employer's own posting link when the API provides
+        # one (externeUrl) — better for the candidate than routing
+        # through Arbeitsagentur's own detail page, though that page
+        # always works too and is the fallback.
+        url_out = posting.get("externeUrl") or (
+            f"https://www.arbeitsagentur.de/jobsuche/jobdetail/{refnr}" if refnr else ""
+        )
+
+        jobs.append({
+            "title": posting.get("beruf", "") or posting.get("titel", ""),
+            "location": location,
+            "url": url_out,
+            "description": "",  # search results don't include full text; the enrichment fetch in main.py picks it up from url_out
+            "posted_date": (posting.get("aktuelleVeroeffentlichungsdatum") or "")[:10],
+            "company": (posting.get("arbeitgeber") or "").strip(),
+        })
+    return jobs
+
+
+# --------------------------------------------------------------------------
 # Dispatcher
 # --------------------------------------------------------------------------
 def scrape_company(company: dict[str, Any]) -> list[dict[str, Any]]:
@@ -619,6 +700,8 @@ def scrape_company(company: dict[str, Any]) -> list[dict[str, Any]]:
             if result:
                 return result
             return _maybe_headless_upgrade(name, careers_url, scrape_generic(name, careers_url))
+        if ats == "arbeitsagentur_api":
+            return scrape_arbeitsagentur(careers_url)
         if ats == "auto":
             # Try the API-based platforms cheaply before falling back to HTML.
             for fn in (

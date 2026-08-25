@@ -1,7 +1,15 @@
 # Job Tracker — Greater Munich, ESG / Sustainability roles
 
 A personal job scraper that checks a curated list of company career
-pages directly — no LinkedIn, StepStone, Indeed, or other aggregators.
+pages directly, plus a handful of genuinely legitimate aggregators —
+dedicated ESG/climate job boards, staffing agencies with their own
+candidate-facing listings, and Germany's official Bundesagentur für
+Arbeit API. Deliberately excludes LinkedIn, XING, StepStone, Indeed,
+and similar platforms: all of them explicitly prohibit automated
+scraping in their terms of service and actively enforce it technically
+(anti-bot detection, CAPTCHAs, account bans) — see the note in
+`config/arbeitsagentur_searches.yaml` for why the Bundesagentur API is
+a different, legitimate case.
 
 This is a single-city, single-focus version of a tracker originally
 built for a PM job search: it's scoped to **Greater Munich only**
@@ -92,6 +100,13 @@ instead of this file** — it walks through every click.
   (mostly small local businesses, not sustainability-specific). Feeds
   both sheets like everything else in the Munich pool — kept in its
   own file since it's a large, unvetted batch, easy to trim later.
+- `config/arbeitsagentur_searches.yaml` — real, targeted searches
+  against Germany's official Bundesagentur für Arbeit Jobsuche API
+  (a genuine public REST API, not a scraped website — see
+  `src/ats_scrapers.py`, `scrape_arbeitsagentur`). Ten searches
+  covering both sustainability terms and general office/admin terms,
+  each within 30km of Munich. Unlike agency sources, this API returns
+  the real hiring employer for every posting.
 - `config/cv_profile.yaml` — the sustainability/ESG title list and
   scoring, feeds the "Jobs" sheet.
 - `config/general_roles_profile.yaml` — the broad office/admin title

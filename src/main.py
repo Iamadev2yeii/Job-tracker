@@ -64,6 +64,7 @@ COMPANIES_FILE = ROOT / "config" / "companies.yaml"
 ESG_JOB_BOARDS_FILE = ROOT / "config" / "esg_job_boards.yaml"
 GENERAL_ROLES_COMPANIES_FILE = ROOT / "config" / "general_roles_companies.yaml"
 BAVARIA_DIRECTORY_COMPANIES_FILE = ROOT / "config" / "bavaria_directory_companies.yaml"
+ARBEITSAGENTUR_SEARCHES_FILE = ROOT / "config" / "arbeitsagentur_searches.yaml"
 REMOTE_SUSTAINABILITY_COMPANIES_FILE = ROOT / "config" / "remote_sustainability_companies.yaml"
 CV_PROFILE_FILE = ROOT / "config" / "cv_profile.yaml"
 GENERAL_ROLES_PROFILE_FILE = ROOT / "config" / "general_roles_profile.yaml"
@@ -126,7 +127,15 @@ def _process_profile(
 
     score_jobs(matched, profile, junior_priority=junior_priority)
     for job in matched:
-        job["company"] = company_name
+        # Most scrapers don't set "company" themselves, so this fills
+        # it in from the configured entry's display name. The
+        # Bundesagentur API is a genuine exception — it returns the
+        # REAL hiring employer for each posting, which is strictly
+        # better than the search entry's own name ("Bundesagentur für
+        # Arbeit (Nachhaltigkeit, München)") — so that's preserved
+        # instead of being overwritten.
+        if not job.get("company"):
+            job["company"] = company_name
 
     stats = {"title_matched": len(title_matched_jobs), "location_confirmed": len(matched)}
     return matched, stats
@@ -248,6 +257,8 @@ def run() -> None:
         companies = companies + load_yaml(GENERAL_ROLES_COMPANIES_FILE)["companies"]
     if BAVARIA_DIRECTORY_COMPANIES_FILE.exists():
         companies = companies + load_yaml(BAVARIA_DIRECTORY_COMPANIES_FILE)["companies"]
+    if ARBEITSAGENTUR_SEARCHES_FILE.exists():
+        companies = companies + load_yaml(ARBEITSAGENTUR_SEARCHES_FILE)["companies"]
 
     sustainability_jobs, general_jobs, munich_counts = scrape_munich_pool(companies, cv_profile, general_profile)
 
