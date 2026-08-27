@@ -231,23 +231,42 @@ def _junior_boost(title: str) -> int:
 
 def extract_location_snippet(text: str, window: int = 30) -> str:
     """
-    For a job whose location was recovered from a full page-text blob
-    (see main.py's enrichment step) rather than a clean structured
-    field, pulls a short window of text around wherever a Munich
-    keyword was actually found — so the tracker's Location column
-    shows something readable instead of the entire fetched page.
-    Falls back to "Munich" if no keyword position is found (shouldn't
-    happen if this text really matched, but defensive regardless).
+    For a Munich-area job whose location was recovered from a full
+    page-text blob (see main.py's enrichment step) rather than a clean
+    structured field, pulls a short window of text around wherever a
+    Munich keyword was actually found — so the tracker's Location
+    column shows something readable instead of the entire fetched
+    page. Falls back to "Munich" if no keyword position is found
+    (shouldn't happen if this text really matched, but defensive
+    regardless).
     """
+    return _extract_keyword_snippet(text, MUNICH_KEYWORDS, window, fallback="Munich")
+
+
+def extract_remote_snippet(text: str, window: int = 30) -> str:
+    """
+    Same idea as extract_location_snippet, but for the remote-Europe
+    pipeline — pulls a window around whichever REMOTE_KEYWORDS phrase
+    matched, with a "Remote" fallback instead of "Munich". Using
+    extract_location_snippet here was a real bug: its Munich-specific
+    fallback meant every remote-Europe posting with a blank location
+    that needed a snippet ended up literally labeled "Munich" in the
+    tracker, which is exactly backwards for a sheet whose entire point
+    is that Munich is NOT where these jobs are.
+    """
+    return _extract_keyword_snippet(text, REMOTE_KEYWORDS, window, fallback="Remote")
+
+
+def _extract_keyword_snippet(text: str, keywords: list[str], window: int, fallback: str) -> str:
     loc = text.lower()
-    for kw in MUNICH_KEYWORDS:
+    for kw in keywords:
         idx = loc.find(kw)
         if idx != -1:
             start = max(0, idx - window)
             end = min(len(text), idx + len(kw) + window)
             snippet = text[start:end].strip()
             return ("..." if start > 0 else "") + snippet + ("..." if end < len(text) else "")
-    return "Munich"
+    return fallback
 
 
 import datetime as _dt

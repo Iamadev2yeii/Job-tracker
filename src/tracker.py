@@ -1,11 +1,20 @@
 """
 Manages the persistent Excel tracker file. Three sheets:
 
-  1. "Jobs" — sustainability/ESG-relevant roles in Munich
-     (config/cv_profile.yaml).
-  2. "General Roles" — a deliberately broad, low-bar fallback sheet:
-     office/admin/secretarial-type roles Prabha could realistically
-     apply to regardless of ESG fit (config/general_roles_profile.yaml).
+  1. "Jobs" — sustainability/ESG-relevant roles in Munich, picked
+     directly from company career pages (no job boards/agencies) plus
+     the Bundesagentur API (config/cv_profile.yaml).
+  2. "Munich Internships & Trainee" — Praktikum/Trainee
+     postings in Munich, any field (not just sustainability, not just
+     office/admin — deliberately broad on field, narrow on seniority).
+     Werkstudent roles are excluded. Still scored for how well it
+     touches Prabha's actual CV themes, purely to rank, never to
+     exclude (config/general_roles_profile.yaml). This sheet was
+     previously named "General Roles" and covered generic office/
+     admin work at any seniority — if your existing tracker file still
+     has that old sheet, it's now an inert leftover (no longer
+     updated); delete it by hand in Excel if you want it gone, same as
+     any other renamed-sheet leftover in this project.
   3. "Remote Sustainability (Europe)" — fully remote ESG/sustainability
      roles anywhere in Europe, not scoped to Munich
      (config/remote_sustainability_profile.yaml).
@@ -58,7 +67,7 @@ GENERAL_NEW_ROW_FILL = PatternFill(start_color="FDE68A", end_color="FDE68A", fil
 REMOTE_NEW_ROW_FILL = PatternFill(start_color="DBEAFE", end_color="DBEAFE", fill_type="solid")  # blue
 
 SHEET_NAME = "Jobs"
-GENERAL_SHEET_NAME = "General Roles"
+GENERAL_SHEET_NAME = "Munich Internships & Trainee"
 REMOTE_SHEET_NAME = "Remote Sustainability (Europe)"
 
 ALL_SHEETS = [SHEET_NAME, GENERAL_SHEET_NAME, REMOTE_SHEET_NAME]
@@ -234,9 +243,9 @@ def update_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score: int = 
 
 
 def update_general_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0) -> dict[str, int]:
-    """Updates the "General Roles" (fallback/employability) sheet.
-    Saves the file. Called separately from update_tracker — each
-    opens, updates its own sheet, and saves; the file just gets saved
+    """Updates the "Munich Internships & Trainee" sheet. Saves
+    the file. Called separately from update_tracker — each opens,
+    updates its own sheet, and saves; the file just gets saved
     multiple times per run, which is harmless."""
     wb = load_or_create(path)
     summary = _update_sheet(wb, GENERAL_SHEET_NAME, GENERAL_NEW_ROW_FILL, new_jobs, min_score)

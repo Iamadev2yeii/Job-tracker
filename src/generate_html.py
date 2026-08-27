@@ -6,8 +6,8 @@ opens in any browser, no Excel and no download needed.
 Renders all three sheets, in order:
   1. "Jobs" — sustainability/ESG-relevant roles in Munich (green
      highlight for new rows).
-  2. "General Roles" — the broader Munich office/admin fallback
-     sheet, no relevance floor applied (amber highlight for new rows).
+  2. "Munich Internships & Trainee" — Praktikum/Trainee
+     postings in any field (amber highlight for new rows).
   3. "Remote Sustainability (Europe)" — fully remote ESG roles
      anywhere in Europe (blue highlight for new rows).
 
@@ -139,14 +139,14 @@ def generate(tracker_path: Path = TRACKER_FILE, output_path: Path = OUTPUT_FILE)
 
     rows_html, total = _render_table(ws, NEW_ROW_FILL, "new-row", "No data yet — the scraper hasn't run.")
     general_rows_html, general_total = _render_table(
-        general_ws, GENERAL_NEW_ROW_FILL, "general-new-row", "No general/office postings yet."
+        general_ws, GENERAL_NEW_ROW_FILL, "general-new-row", "No internship/traineeship postings yet."
     )
     remote_rows_html, remote_total = _render_table(
         remote_ws, REMOTE_NEW_ROW_FILL, "remote-new-row", "No remote postings yet."
     )
 
     title = "Munich ESG / Sustainability Jobs" + (f" (score {min_score}+ only)" if min_score else "")
-    general_title = "General / Office Roles (Munich)" + (f" (score {general_min_score}+ only)" if general_min_score else "")
+    general_title = "Munich Internships & Trainee" + (f" (score {general_min_score}+ only)" if general_min_score else "")
     remote_title = "Remote Sustainability (Europe)" + (f" (score {remote_min_score}+ only)" if remote_min_score else "")
     updated = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 

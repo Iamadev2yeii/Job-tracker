@@ -7,13 +7,19 @@ runs daily at 06:30 Munich time, plus manual "Run workflow" trigger).
 
 Two scrape pools, three sheets:
 
-  POOL A — Munich (config/companies.yaml + esg_job_boards.yaml +
-  general_roles_companies.yaml). Scraped ONCE per company, then run
-  through TWO independent matching pipelines:
+  POOL A — Munich (config/companies.yaml + general_roles_companies.yaml
+  + bavaria_directory_companies.yaml + arbeitsagentur_searches.yaml —
+  deliberately NOT esg_job_boards.yaml; the "Jobs" sheet is picked
+  directly from company career pages or the Bundesagentur API's real
+  employer data, not job boards/agencies). Scraped ONCE per company,
+  then run through TWO independent matching pipelines:
     1. Sustainability/ESG (config/cv_profile.yaml) -> "Jobs" sheet.
-    2. General/office-admin fallback (config/general_roles_profile.yaml)
-       -> "General Roles" sheet. Deliberately broad and NOT gated by
-       relevance to sustainability.
+    2. Internships/traineeships, any field
+       (config/general_roles_profile.yaml) -> "Internships &
+       Traineeships (Munich)" sheet. Deliberately broad on field
+       (not just sustainability, not just office/admin) and narrow on
+       type (Praktikum/Trainee only, no Werkstudent, no permanent
+       roles) — still scored against Prabha's CV themes for ranking.
 
   POOL B — Remote-Europe (config/remote_sustainability_companies.yaml,
   a small set of dedicated climate/ESG job boards). Scraped
@@ -47,7 +53,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.ats_scrapers import scrape_company, fetch_description_fallback, reset_headless_budget
 from src.matcher import (
     filter_by_title_only, resolve_munich_match, resolve_remote_eu_match,
-    extract_location_snippet, score_jobs,
+    extract_location_snippet, extract_remote_snippet, score_jobs,
 )
 from src.tracker import update_tracker, update_general_tracker, update_remote_tracker
 from src.generate_html import generate as generate_html
@@ -85,6 +91,8 @@ def _process_profile(
     resolver_kwargs: dict[str, Any],
     log_diag: bool,
     junior_priority: bool = False,
+    snippet_fn: Callable[[str], str] = extract_location_snippet,
+    assumed_location_text: str = "Munich (assumed — single-office company)",
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """
     Runs one company's raw scrape through one profile's title filter,
@@ -94,7 +102,14 @@ def _process_profile(
 
     resolver is resolve_munich_match or resolve_remote_eu_match;
     resolver_kwargs carries whatever extra args that resolver needs
-    (e.g. assume_local for the Munich one).
+    (e.g. assume_local for the Munich one). snippet_fn and
+    assumed_location_text let the remote-Europe pipeline use its own
+    "Remote"-flavored wording instead of the Munich-specific defaults
+    — using the Munich snippet function for the remote pipeline was a
+    real bug (its fallback literally returns the string "Munich"),
+    which is why remote-sheet postings kept showing "Munich" as their
+    location even though the whole point of that sheet is that Munich
+    isn't where they are.
     """
     jobs = [copy.deepcopy(j) for j in raw_jobs]
     title_matched_jobs = filter_by_title_only(jobs, profile)
@@ -114,9 +129,9 @@ def _process_profile(
             continue
 
         if enrichment_text and not job.get("location"):
-            job["location"] = extract_location_snippet(enrichment_text)
+            job["location"] = snippet_fn(enrichment_text)
         if not job.get("location") and resolver_kwargs.get("assume_local"):
-            job["location"] = "Munich (assumed — single-office company)"
+            job["location"] = assumed_location_text
 
         if not job.get("description") and enrichment_text:
             job["description"] = enrichment_text
@@ -225,6 +240,7 @@ def scrape_remote_pool(companies: list[dict], remote_profile: dict) -> tuple[lis
 
         matched, stats = _process_profile(
             raw_jobs, remote_profile, name, resolve_remote_eu_match, {}, log_diag=True, junior_priority=True,
+            snippet_fn=extract_remote_snippet, assumed_location_text="Remote (Europe)",
         )
         remote_jobs.extend(matched)
 
@@ -251,8 +267,14 @@ def run() -> None:
     reset_headless_budget()  # one shared 15-min headless budget for the whole run
 
     companies = load_yaml(COMPANIES_FILE)["companies"]
-    if ESG_JOB_BOARDS_FILE.exists():
-        companies = companies + load_yaml(ESG_JOB_BOARDS_FILE)["companies"]
+    # esg_job_boards.yaml (NachhaltigeJobs.de, ClimateTechList, and the
+    # staffing-agency search pages) is deliberately NOT loaded into the
+    # Munich pool anymore — per request, the "Jobs" sheet should only
+    # ever surface postings picked up directly from a specific
+    # company's own career page (or the Bundesagentur API below, which
+    # returns the real hiring employer for each posting — the same
+    # spirit, just a different mechanism). The file itself is left in
+    # place in case it's wanted back later.
     if GENERAL_ROLES_COMPANIES_FILE.exists():
         companies = companies + load_yaml(GENERAL_ROLES_COMPANIES_FILE)["companies"]
     if BAVARIA_DIRECTORY_COMPANIES_FILE.exists():
@@ -289,7 +311,7 @@ def run() -> None:
         summary["added"], summary["already_tracked"], summary["pruned"], summary["total_rows"],
     )
     logger.info(
-        "General Roles sheet: %d new rows added, %d already tracked, %d pruned, %d total rows",
+        "Munich Internships & Trainee sheet: %d new rows added, %d already tracked, %d pruned, %d total rows",
         general_summary["added"], general_summary["already_tracked"], general_summary["pruned"],
         general_summary["total_rows"],
     )
