@@ -1,17 +1,19 @@
-# REPURPOSED: this used to be a broad office/admin fallback sheet.
-# Per request, it's now "Internships & Traineeships (Munich, any
-# field)" — Praktikum/Trainee postings in Munich, deliberately NOT
-# restricted to office/admin work and NOT restricted to sustainability
-# either — any field counts, since the point here is getting Prabha
-# employed quickly, not a specialty match. Werkstudent (working-
-# student) roles are deliberately excluded — trainee/internship only.
+# "Munich Internships & Trainee" — Praktikum/Trainee postings in
+# Munich, now TARGETED rather than any-field: a posting must be BOTH
+# an internship/trainee-type title AND relevant to Prabha's field
+# (title contains a relevance_keywords term below) — UNLESS it comes
+# from a company whose core business already IS that field
+# (`sustainability_related: true` in companies.yaml), in which case
+# any internship/trainee title at that company counts, even a
+# generically titled one like "Praktikum Marketing" at a climate-tech
+# startup.
 #
-# The relevance score still matters, though: scoring_keywords below
-# are drawn from Prabha's actual CV (environmental science, carbon
-# accounting/ESG, project management, data analysis, languages) so
-# that an internship touching on any of those themes ranks higher
-# than one that doesn't — without excluding anything else, since
-# main_min_score stays 0.
+# This replaces an earlier "any field at all" version of this sheet,
+# reverted after it surfaced a Korean-market trainee program with no
+# connection to Prabha's background — being broad on field with no
+# relevance gate let in postings from literally any industry.
+# Werkstudent (working-student) roles remain deliberately excluded —
+# internships and traineeships only.
 title_must_match:
   - "praktikum"
   - "praktikant"
@@ -21,17 +23,42 @@ title_must_match:
   - "internship"
   - "intern"
 
+# Title must ALSO contain one of these (unless the company is flagged
+# sustainability_related) — English + German sustainability/
+# environment/carbon terms, mirroring cv_profile.yaml's field.
+relevance_keywords:
+  - "sustainability"
+  - "nachhaltigkeit"
+  - "nachhaltig"
+  - "esg"
+  - "carbon"
+  - "co2"
+  - "climate"
+  - "klima"
+  - "klimaschutz"
+  - "environmental"
+  - "umwelt"
+  - "umweltschutz"
+  - "csr"
+  - "csrd"
+  - "green"
+  - "erneuerbare"
+  - "renewable"
+  - "energie"
+  - "energy"
+  - "circular economy"
+  - "kreislaufwirtschaft"
+  - "biodiversity"
+
 main_min_score: 0
 score_ceiling: 8
 
 # "Remotely matches her CV" scoring — not a filter, purely a ranking
-# signal across whatever field the internship/trainee posting is
-# actually in. Deliberately narrower than an earlier version: generic
-# corporate buzzwords (communication, reporting, research,
+# signal among the already sustainability-relevant postings above.
+# Generic corporate buzzwords (communication, reporting, research,
 # multilingual) were dropped after one inflated the score of an
-# otherwise-irrelevant, Korean-language-required posting — almost any
-# professional trainee program description touches those words
-# regardless of actual fit, so they weren't a meaningful signal.
+# otherwise-irrelevant posting — almost any professional trainee
+# program description touches those words regardless of actual fit.
 scoring_keywords:
   - {term: "sustainability", weight: 2}
   - {term: "nachhaltigkeit", weight: 2}
