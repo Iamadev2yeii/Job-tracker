@@ -22,11 +22,16 @@ title_must_match:
   - "intern"
 
 main_min_score: 0
-score_ceiling: 10
+score_ceiling: 8
 
 # "Remotely matches her CV" scoring — not a filter, purely a ranking
 # signal across whatever field the internship/trainee posting is
-# actually in.
+# actually in. Deliberately narrower than an earlier version: generic
+# corporate buzzwords (communication, reporting, research,
+# multilingual) were dropped after one inflated the score of an
+# otherwise-irrelevant, Korean-language-required posting — almost any
+# professional trainee program description touches those words
+# regardless of actual fit, so they weren't a meaningful signal.
 scoring_keywords:
   - {term: "sustainability", weight: 2}
   - {term: "nachhaltigkeit", weight: 2}
@@ -46,16 +51,8 @@ scoring_keywords:
   - {term: "r programming", weight: 1}
   - {term: "gis", weight: 1}
   - {term: "arcgis", weight: 1}
-  - {term: "research", weight: 1}
-  - {term: "forschung", weight: 1}
-  - {term: "stakeholder", weight: 1}
-  - {term: "reporting", weight: 1}
-  - {term: "berichterstattung", weight: 1}
+  - {term: "stakeholder management", weight: 1}
   - {term: "agile", weight: 1}
   - {term: "scrum", weight: 1}
   - {term: "jira", weight: 1}
   - {term: "confluence", weight: 1}
-  - {term: "multilingual", weight: 1}
-  - {term: "mehrsprachig", weight: 1}
-  - {term: "communication", weight: 1}
-  - {term: "kommunikation", weight: 1}
