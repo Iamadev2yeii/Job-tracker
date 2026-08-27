@@ -52,7 +52,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.ats_scrapers import scrape_company, fetch_description_fallback, reset_headless_budget
 from src.matcher import (
-    filter_by_title_only, resolve_munich_match, resolve_remote_eu_match,
+    filter_by_title_only, filter_internships, resolve_munich_match, resolve_remote_eu_match,
     extract_location_snippet, extract_remote_snippet, score_jobs,
 )
 from src.tracker import update_tracker, update_general_tracker, update_remote_tracker
@@ -93,6 +93,8 @@ def _process_profile(
     junior_priority: bool = False,
     snippet_fn: Callable[[str], str] = extract_location_snippet,
     assumed_location_text: str = "Munich (assumed — single-office company)",
+    title_filter: Callable[..., list[dict[str, Any]]] = filter_by_title_only,
+    title_filter_kwargs: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """
     Runs one company's raw scrape through one profile's title filter,
@@ -109,10 +111,12 @@ def _process_profile(
     real bug (its fallback literally returns the string "Munich"),
     which is why remote-sheet postings kept showing "Munich" as their
     location even though the whole point of that sheet is that Munich
-    isn't where they are.
+    isn't where they are. title_filter/title_filter_kwargs let the
+    internships pipeline use filter_internships (title + relevance,
+    with a per-company exemption) instead of the plain title check.
     """
     jobs = [copy.deepcopy(j) for j in raw_jobs]
-    title_matched_jobs = filter_by_title_only(jobs, profile)
+    title_matched_jobs = title_filter(jobs, profile, **(title_filter_kwargs or {}))
 
     if not title_matched_jobs and log_diag:
         sample_titles = [j.get("title", "") for j in jobs[:8] if j.get("title")]
@@ -185,6 +189,7 @@ def scrape_munich_pool(
             continue
 
         assume_local = bool(company.get("assume_local", False))
+        sustainability_related_company = bool(company.get("sustainability_related", False))
 
         sustain_matched, sustain_stats = _process_profile(
             raw_jobs, cv_profile, name, resolve_munich_match, {"assume_local": assume_local}, log_diag=True,
@@ -192,6 +197,8 @@ def scrape_munich_pool(
         )
         general_matched, general_stats = _process_profile(
             raw_jobs, general_profile, name, resolve_munich_match, {"assume_local": assume_local}, log_diag=False,
+            title_filter=filter_internships,
+            title_filter_kwargs={"sustainability_related_company": sustainability_related_company},
         )
 
         sustainability_jobs.extend(sustain_matched)

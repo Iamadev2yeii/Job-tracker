@@ -598,8 +598,12 @@ def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
     complete, pre-built query against the Jobsuche API's /pc/v6/jobs
     endpoint (e.g. "...?was=Nachhaltigkeit&wo=M%C3%BCnchen&umkreis=30")
     — see config/arbeitsagentur_searches.yaml for the actual searches
-    in use. page/size are appended here if the config didn't already
-    include them, so every search entry doesn't have to repeat them.
+    in use. page/size are added here via urllib.parse (not string
+    concatenation) if the config didn't already include them — this
+    also re-normalizes whatever encoding the YAML happened to use
+    (raw UTF-8 umlauts, pre-percent-encoded, mixed) into exactly what
+    `requests` would produce itself, removing a whole class of
+    "the query silently matches nothing" bugs from encoding mismatches.
 
     Unlike every other scraper in this file, the API already tells us
     the REAL hiring employer for each posting (the "arbeitgeber"
@@ -607,15 +611,17 @@ def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
     ever show the agency's own name. main.py preserves that instead of
     overwriting it with the search entry's own display name.
     """
-    url = careers_url
-    if "size=" not in url:
-        url += ("&" if "?" in url else "?") + "size=100"
-    if "page=" not in url:
-        # The API's own docs are explicit: pages are 1-indexed
-        # ("Seite (beginnend mit 1)"). page=0 is invalid and returns
-        # HTTP 400 — every one of this project's searches hit exactly
-        # that bug until this was caught in a real run's log.
-        url += "&page=1"
+    from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+
+    parts = urlsplit(careers_url)
+    query = dict(parse_qsl(parts.query, keep_blank_values=True))
+    query.setdefault("size", "100")
+    # The API's own docs are explicit: pages are 1-indexed ("Seite
+    # (beginnend mit 1)"). page=0 is invalid and returns HTTP 400 —
+    # every one of this project's searches hit exactly that bug until
+    # it was caught in a real run's log.
+    query.setdefault("page", "1")
+    url = urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), ""))
 
     try:
         resp = requests.get(
@@ -631,8 +637,20 @@ def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
         logger.warning("GET %s failed: %s", url, exc)
         return []
 
+    postings = data.get("stellenangebote", [])
+    if not postings:
+        # Diagnostic for the "200 OK but genuinely nothing came back"
+        # case — this happened for every search in a real run right
+        # after the page=0->400 bug was fixed, and a plain "EMPTY" log
+        # line gave no way to tell a real zero-result query apart from
+        # a still-broken one. maxErgebnisse (if present) is the API's
+        # own reported total match count, independent of pagination.
+        total = data.get("maxErgebnisse")
+        logger.info("  DIAG (Bundesagentur): 0 postings returned. maxErgebnisse=%s, response keys=%s",
+                    total, list(data.keys()))
+
     jobs = []
-    for posting in data.get("stellenangebote", []):
+    for posting in postings:
         # Field names have shifted across API versions (refnr vs
         # referenznummer) — check both defensively.
         refnr = posting.get("referenznummer") or posting.get("refnr") or ""

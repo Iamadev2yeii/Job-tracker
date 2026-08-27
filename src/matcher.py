@@ -157,6 +157,41 @@ def filter_by_title_only(jobs: list[dict[str, Any]], cv_profile: dict[str, Any])
     ]
 
 
+def filter_internships(
+    jobs: list[dict[str, Any]], profile: dict[str, Any], sustainability_related_company: bool = False
+) -> list[dict[str, Any]]:
+    """
+    For the "Munich Internships & Trainee" sheet specifically: a job
+    must be BOTH an internship/trainee-type posting (title_must_match)
+    AND relevant to Prabha's actual field (title contains a
+    relevance_keywords term) — UNLESS the posting comes from a company
+    whose core business already IS that field (sustainability_related_
+    company=True, set per-entry in companies.yaml), in which case any
+    internship/trainee title at that company counts, even a generically
+    titled one like "Praktikum Marketing" at a climate-tech startup.
+
+    This is deliberately narrower than an earlier version of this
+    sheet, which accepted ANY-field internships — that surfaced things
+    like a Korean-market trainee program with no connection to
+    Prabha's background at all. Seniority and language exclusion still
+    apply via the title_must_match check above.
+    """
+    must_match = profile.get("title_must_match", [])
+    relevance_keywords = profile.get("relevance_keywords", [])
+    result = []
+    for job in jobs:
+        title = job.get("title", "")
+        if not title:
+            continue
+        if not title_matches(title, must_match):
+            continue
+        if is_excluded_seniority(title) or is_excluded_language(title):
+            continue
+        if sustainability_related_company or not relevance_keywords or title_matches(title, relevance_keywords):
+            result.append(job)
+    return result
+
+
 def resolve_munich_match(job: dict[str, Any], search_text: str | None = None, assume_local: bool = False) -> bool:
     """
     Decides whether a single already title-matched job is confirmed
