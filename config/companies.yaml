@@ -1,47 +1,44 @@
 # Companies scraped directly on their own career pages (Greater Munich
-# only). Rebuilt from scratch around Prabha'''s actual field — ESG,
-# Sustainability, Carbon Accounting, and Climate — rather than reused
-# from the original PM/aerospace/defense-focused tracker this project
-# was cloned from. Three groups:
+# only). Built around Prabha's actual field -- ESG, Sustainability,
+# Carbon Accounting, and Climate. Three main groups, plus a later
+# batch of additional verified sustainability consultancies/startups:
 #
 #   1. Climate-tech / ESG-software startups (Tanso, IntegrityNext,
-#      envoria, Ororatech, Ark Climate, Inplanet, and others) — the
-#      closest match to her actual carbon-accounting/ESG-data
-#      background, sourced from Munich'''s climate-tech startup scene
-#      (Munich Startup, AENU'''s Munich Climate Tech Market Map).
+#      envoria, Ororatech, Ark Climate, Inplanet, sustamize, and
+#      others) -- the closest match to her actual carbon-accounting/
+#      ESG-data background, sourced from Munich's climate-tech scene.
 #   2. ESG / sustainability consultancies with a Munich presence
 #      (Anthesis, FTI Consulting, Baker Tilly, WTS Group, EurA,
-#      Ramboll, Drees & Sommer, ERM, ACCONSIS, Capgemini) plus the
-#      Big Four and TUEV SUED, all of which run real ESG advisory
-#      practices.
+#      Ramboll, Drees & Sommer, ERM, ACCONSIS, Arqum, DFGE, ACCON,
+#      BAUM Consult, Capgemini) plus the Big Four and TUEV SUED, all
+#      of which run real ESG advisory practices.
 #   3. Large Munich-area corporates/institutions with genuine,
-#      verifiable sustainability or ESG-reporting functions —
+#      verifiable sustainability or ESG-reporting functions --
 #      finance/insurance (Allianz, Munich Re, BayernLB...), energy/
-#      utilities (E.ON, TenneT, Stadtwerke Muenchen, BayWa r.e...),
-#      industrials with real decarbonization programs (Siemens
-#      Energy, MTU, Airbus, MAN Truck & Bus, Traton...), plus public
-#      sector and research (Landeshauptstadt Muenchen, Fraunhofer,
-#      DLR Oberpfaffenhofen, UnternehmerTUM, BUND Naturschutz Bayern).
+#      utilities (E.ON, TenneT, Stadtwerke Muenchen, BayWa r.e.,
+#      Orcan Energy, Reverion, Siqens...), industrials with real
+#      decarbonization programs (Siemens Energy, MTU, Airbus, MAN
+#      Truck & Bus, Traton...), plus public sector and research
+#      (Landeshauptstadt Muenchen, Fraunhofer, DLR Oberpfaffenhofen,
+#      UnternehmerTUM, BUND Naturschutz Bayern).
 #
-# Deliberately dropped everything defense/space/military-adjacent
-# from the original list (Hensoldt, Diehl Defence, KNDS, MBDA, OHB
-# System, Eurofighter, ESO, the Max Planck astrophysics institutes,
-# the various defense-tech startups, etc.) and a handful of other
-# entries with no plausible ESG angle (GEMA, Baader Bank, BMW Bank,
-# Tacterion, isotope/EOS optics, etc.) — not relevant to this search.
+# Deliberately excludes defense/space/military-adjacent companies and
+# a handful of entries with no plausible ESG angle. This sheet is
+# picked directly from company career pages only -- no job boards or
+# staffing agencies feed it (see config/esg_job_boards.yaml, which is
+# no longer loaded into the Munich pool by src/main.py). The
+# Bundesagentur API searches in config/arbeitsagentur_searches.yaml
+# are the one exception, since they return the real hiring employer
+# for each posting -- the same spirit as "direct from companies,"
+# just a different mechanism.
 #
-# `assume_local: true` — set on small, genuinely single-Munich-office
-# companies only. For those, a job whose location came back blank
-# (common — many platforms just don't expose it) is treated as a
-# Munich match instead of being dropped, since there's realistically
-# nowhere else it could be. Left unset (default false) for every
-# multi-city/multi-country company, where a blank location genuinely
-# could be anywhere and dropping it is the safer default.
+# `assume_local: true` -- set on small, genuinely single-Munich-office
+# companies only; for those, a blank location is treated as a Munich
+# match instead of being dropped. Left unset for multi-city companies.
 #
-# Many career URLs here are best-effort guesses for smaller/newer
-# companies (same caveat as the original tracker) — see
-# SETUP_GUIDE.md Part 7 for how to fix a `careers_url`/`ats` that
-# isn't returning results. Add or remove entries freely.
+# Many career URLs are best-effort "<domain>/karriere" guesses for
+# smaller/newer companies -- see SETUP_GUIDE.md Part 7 for how to fix
+# one that isn't returning results.
 companies:
 - name: BMW Group
   city: Munich
@@ -955,6 +952,65 @@ companies:
 - name: Carbon Atlantis (Phlair)
   city: Munich
   careers_url: https://www.carbonatlantis.com/careers
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: sustamize
+  city: Munich
+  careers_url: https://sustamize.com/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: DFGE (Institut für Energie-, Umwelt- und Nachhaltigkeitsmanagement)
+  city: Munich
+  careers_url: https://www.dfge.de/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: Arqum
+  city: Munich
+  careers_url: https://www.arqum.de/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: Energie-Spezialisten
+  city: Munich
+  careers_url: https://www.energie-spezialisten.de/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: ACCON
+  city: Munich
+  careers_url: https://www.accon.de/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: BAUM Consult
+  city: Munich
+  careers_url: https://www.baumconsult.de/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: Orcan Energy
+  city: Munich
+  careers_url: https://www.orcan-energy.com/karriere
+  ats: auto
+  board_token: ''
+- name: Reverion
+  city: Munich
+  careers_url: https://reverion.de/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: Siqens
+  city: Munich
+  careers_url: https://www.siqens.de/karriere
+  ats: auto
+  board_token: ''
+  assume_local: true
+- name: PLANETICS
+  city: Munich
+  careers_url: https://planetics.co/karriere
   ats: auto
   board_token: ''
   assume_local: true

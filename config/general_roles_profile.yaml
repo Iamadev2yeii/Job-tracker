@@ -1,75 +1,61 @@
-# A deliberately BROAD, low-bar profile — not for sustainability fit,
-# but for general office/administrative roles Prabha could realistically
-# get hired for regardless of her ESG background. Feeds the second
-# "General / Office Roles" sheet, not the sustainability "Jobs" sheet.
+# REPURPOSED: this used to be a broad office/admin fallback sheet.
+# Per request, it's now "Internships & Traineeships (Munich, any
+# field)" — Praktikum/Trainee postings in Munich, deliberately NOT
+# restricted to office/admin work and NOT restricted to sustainability
+# either — any field counts, since the point here is getting Prabha
+# employed quickly, not a specialty match. Werkstudent (working-
+# student) roles are deliberately excluded — trainee/internship only.
 #
-# No relevance filtering is applied here on purpose (main_min_score
-# stays 0) — the whole point of this sheet is "can she apply," not
-# "is this her specialty." Scoring still runs (mostly to rank by
-# generic fit — MS Office, languages, organizational skills) but
-# never excludes anything.
+# The relevance score still matters, though: scoring_keywords below
+# are drawn from Prabha's actual CV (environmental science, carbon
+# accounting/ESG, project management, data analysis, languages) so
+# that an internship touching on any of those themes ranks higher
+# than one that doesn't — without excluding anything else, since
+# main_min_score stays 0.
 title_must_match:
-  - "office manager"
-  - "office management"
-  - "büromanagement"
-  - "bürokraft"
-  - "bürokauffrau"
-  - "bürokaufmann"
-  - "office administration"
-  - "office coordinator"
-  - "office assistant"
-  - "administrative assistant"
-  - "verwaltungsassistenz"
-  - "verwaltungsfachangestellte"
-  - "verwaltungsangestellte"
-  - "sachbearbeiter"
-  - "sachbearbeiterin"
-  - "receptionist"
-  - "empfang"
-  - "empfangsmitarbeiter"
-  - "empfangskraft"
-  - "front desk"
-  - "secretary"
-  - "sekretärin"
-  - "sekretär"
-  - "sekretariat"
-  - "personal assistant"
-  - "executive assistant"
-  - "assistant to"
-  - "assistenz"
-  - "assistent"
-  - "team assistant"
-  - "teamassistenz"
-  - "kauffrau für büromanagement"
-  - "kaufmann für büromanagement"
-  - "backoffice"
-  - "back office"
-  - "data entry"
-  - "customer service"
-  - "kundenservice"
-  - "kundenbetreuung"
-  - "callcenter"
-  - "call center"
-  - "verwaltung"
-  - "facility management"
-  - "hr assistant"
-  - "personalassistenz"
+  - "praktikum"
+  - "praktikant"
+  - "praktikantin"
+  - "trainee"
+  - "traineeprogramm"
+  - "internship"
+  - "intern"
 
 main_min_score: 0
-score_ceiling: 6
+score_ceiling: 10
 
-# Light generic scoring — enough to rank, not enough to exclude.
+# "Remotely matches her CV" scoring — not a filter, purely a ranking
+# signal across whatever field the internship/trainee posting is
+# actually in.
 scoring_keywords:
-  - {term: "ms office", weight: 1}
-  - {term: "microsoft office", weight: 1}
-  - {term: "organisationstalent", weight: 1}
-  - {term: "organized", weight: 1}
+  - {term: "sustainability", weight: 2}
+  - {term: "nachhaltigkeit", weight: 2}
+  - {term: "esg", weight: 2}
+  - {term: "carbon", weight: 2}
+  - {term: "climate", weight: 2}
+  - {term: "klima", weight: 2}
+  - {term: "environmental", weight: 2}
+  - {term: "umwelt", weight: 2}
+  - {term: "csr", weight: 1}
+  - {term: "project management", weight: 2}
+  - {term: "projektmanagement", weight: 2}
+  - {term: "program officer", weight: 1}
+  - {term: "data analysis", weight: 2}
+  - {term: "datenanalyse", weight: 2}
+  - {term: "python", weight: 1}
+  - {term: "r programming", weight: 1}
+  - {term: "gis", weight: 1}
+  - {term: "arcgis", weight: 1}
+  - {term: "research", weight: 1}
+  - {term: "forschung", weight: 1}
+  - {term: "stakeholder", weight: 1}
+  - {term: "reporting", weight: 1}
+  - {term: "berichterstattung", weight: 1}
+  - {term: "agile", weight: 1}
+  - {term: "scrum", weight: 1}
+  - {term: "jira", weight: 1}
+  - {term: "confluence", weight: 1}
+  - {term: "multilingual", weight: 1}
+  - {term: "mehrsprachig", weight: 1}
   - {term: "communication", weight: 1}
   - {term: "kommunikation", weight: 1}
-  - {term: "englisch", weight: 1}
-  - {term: "english", weight: 1}
-  - {term: "deutsch", weight: 1}
-  - {term: "italienisch", weight: 1}
-  - {term: "französisch", weight: 1}
-  - {term: "mehrsprachig", weight: 1}
-  - {term: "multilingual", weight: 1}

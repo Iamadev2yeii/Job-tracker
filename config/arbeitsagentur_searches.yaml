@@ -16,57 +16,47 @@
 # The API gives the REAL hiring employer for every posting (unlike
 # most agency sources) — main.py preserves that instead of overwriting
 # it with this entry's own display name.
+#
+# The 4 office/admin-specific searches (Büromanagement, Sekretariat,
+# Assistenz, Empfang) that used to be here were removed once the
+# "Internships & Traineeships" sheet was repurposed to internships/
+# trainees only, any field — those searches only ever found permanent
+# office roles, which no profile matches against anymore. The single
+# angebotsart=34 (Praktikum/Trainee) search below already covers
+# office-track internships too, alongside every other field.
 companies:
-  # --- Sustainability-relevant searches (feed the "Jobs" sheet) ---
-  - name: "Bundesagentur für Arbeit (Nachhaltigkeit, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeit&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-  - name: "Bundesagentur für Arbeit (ESG, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=ESG&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-  - name: "Bundesagentur für Arbeit (Klimaschutz, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimaschutz&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-  - name: "Bundesagentur für Arbeit (Umweltmanagement, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltmanagement&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-  - name: "Bundesagentur für Arbeit (Nachhaltigkeitsmanager, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeitsmanager&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-  - name: "Bundesagentur für Arbeit (CO2 Bilanzierung, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=CO2-Bilanzierung&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-
-  # --- General/office-admin searches (feed the "General Roles" sheet) ---
-  - name: "Bundesagentur für Arbeit (Büromanagement, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=B%C3%BCromanagement&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-  - name: "Bundesagentur für Arbeit (Sekretariat, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Sekretariat&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-  - name: "Bundesagentur für Arbeit (Assistenz, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Assistenz&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
-  - name: "Bundesagentur für Arbeit (Empfang, München)"
-    city: Munich
-    careers_url: "https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Empfang&wo=M%C3%BCnchen&umkreis=30"
-    ats: arbeitsagentur_api
-    board_token: ""
+- name: Bundesagentur für Arbeit (Nachhaltigkeit, München)
+  city: Munich
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeit&wo=M%C3%BCnchen&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+- name: Bundesagentur für Arbeit (ESG, München)
+  city: Munich
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=ESG&wo=M%C3%BCnchen&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+- name: Bundesagentur für Arbeit (Klimaschutz, München)
+  city: Munich
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimaschutz&wo=M%C3%BCnchen&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+- name: Bundesagentur für Arbeit (Umweltmanagement, München)
+  city: Munich
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltmanagement&wo=M%C3%BCnchen&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+- name: Bundesagentur für Arbeit (Nachhaltigkeitsmanager, München)
+  city: Munich
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeitsmanager&wo=M%C3%BCnchen&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+- name: Bundesagentur für Arbeit (CO2 Bilanzierung, München)
+  city: Munich
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=CO2-Bilanzierung&wo=M%C3%BCnchen&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+- name: Bundesagentur für Arbeit (Praktikum/Trainee, München, alle Bereiche)
+  city: Munich
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?angebotsart=34&wo=M%C3%BCnchen&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
