@@ -1,0 +1,128 @@
+# Derived from Prabha Neupane's CV. Edit freely as the CV evolves —
+# nothing here is fetched automatically, you keep it in sync by hand.
+#
+# title_must_match:
+#   A job's TITLE must contain at least one of these (case-insensitive)
+#   to be picked up at all. Covers ESG / sustainability / carbon /
+#   climate roles in English and German, since German-language roles
+#   are common for Munich-based postings even when the company also
+#   posts in English internationally.
+title_must_match:
+  - "esg"
+  - "sustainability"
+  - "nachhaltigkeit"
+  - "carbon"
+  - "co2"
+  - "climate"
+  - "klima"
+  - "klimaschutz"
+  - "environmental"
+  - "umwelt"
+  - "csr"
+  - "corporate social responsibility"
+  - "ghg"
+  - "net zero"
+  - "net-zero"
+  - "decarbonization"
+  - "decarbonisation"
+  - "csrd"
+  - "eu taxonomy"
+  - "sustainable finance"
+  - "impact analyst"
+  - "esg analyst"
+  - "esg reporting"
+  - "environmental researcher"
+  - "environmental scientist"
+  - "ehs"
+  - "referent nachhaltigkeit"
+  - "nachhaltigkeitsreferent"
+  - "klimamanager"
+  - "csr-manager"
+  - "sustainability coordinator"
+  - "sustainability specialist"
+  - "sustainability associate"
+  - "responsible sourcing"
+  - "supply chain sustainability"
+  - "circular economy"
+  - "biodiversity"
+  - "esg specialist"
+  - "esg coordinator"
+  - "environmental compliance"
+  - "green finance"
+  - "climate risk"
+  - "double materiality"
+  - "carbon accountant"
+  - "umweltmanager"
+  - "umweltingenieur"
+  - "program officer"
+  - "project officer"
+  - "environmental engineer"
+  - "environmental analyst"
+  - "regulatory affairs"
+  - "impact assessment"
+
+# main_min_score:
+#   No score floor is applied — every job that passes the title +
+#   confirmed-Munich-area filter is shown, regardless of relevance
+#   score. The score is still computed and used to sort the sheet
+#   (highest first), just not used to exclude anything. Set above 0
+#   later if you want a floor — the code fully supports it.
+main_min_score: 0
+
+# score_ceiling:
+#   Used to convert the raw keyword-weight sum into a 1-10 scale shown
+#   in the Excel tracker (10 = best match). Raise this if scores are
+#   clustering too high; lower it if scores are clustering too low.
+#   Many platforms (SmartRecruiters, Workday, generic HTML) don't
+#   expose full description text, so those postings can only be
+#   scored on title words alone — start at 12, same starting point
+#   Giorgio's tracker used, and adjust once you've seen real results.
+score_ceiling: 12
+
+# scoring_keywords:
+#   Each match inside the job description adds "weight" points toward
+#   the raw score above, which then gets converted to the 1-10 scale.
+#   Used to rank/sort results, not to filter them out. Drawn from
+#   Prabha's CV: transaction-based carbon accounting, EEIO / global
+#   input-output models (EXIOBASE, EORA), ISAE 3000 assurance work,
+#   ESG portfolio analysis, sustainable finance taxonomies, and her
+#   technical/data-analysis toolkit.
+scoring_keywords:
+  - {term: "carbon accounting", weight: 3}
+  - {term: "ghg protocol", weight: 3}
+  - {term: "scope 1", weight: 2}
+  - {term: "scope 2", weight: 2}
+  - {term: "scope 3", weight: 2}
+  - {term: "carbon footprint", weight: 2}
+  - {term: "life cycle assessment", weight: 2}
+  - {term: "lca", weight: 1}
+  - {term: "exiobase", weight: 3}
+  - {term: "eora", weight: 2}
+  - {term: "input-output model", weight: 2}
+  - {term: "eeio", weight: 2}
+  - {term: "isae 3000", weight: 3}
+  - {term: "assurance", weight: 1}
+  - {term: "esg", weight: 2}
+  - {term: "csrd", weight: 2}
+  - {term: "eu taxonomy", weight: 2}
+  - {term: "sustainable finance", weight: 2}
+  - {term: "net zero", weight: 2}
+  - {term: "nzaoa", weight: 2}
+  - {term: "msci", weight: 1}
+  - {term: "reprisk", weight: 1}
+  - {term: "regulatory compliance", weight: 2}
+  - {term: "compliance", weight: 1}
+  - {term: "stakeholder", weight: 1}
+  - {term: "climate risk", weight: 2}
+  - {term: "climate scenario", weight: 2}
+  - {term: "environmental data", weight: 1}
+  - {term: "python", weight: 1}
+  - {term: "r programming", weight: 1}
+  - {term: "arcgis", weight: 1}
+  - {term: "open lca", weight: 2}
+  - {term: "jira", weight: 1}
+  - {term: "confluence", weight: 1}
+  - {term: "agile", weight: 1}
+  - {term: "scrum", weight: 1}
+  - {term: "reporting", weight: 1}
+  - {term: "data analysis", weight: 1}

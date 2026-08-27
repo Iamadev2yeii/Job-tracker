@@ -1,0 +1,76 @@
+# Specialized ESG/sustainability job sources — genuinely different
+# from companies.yaml: these are pre-filtered SEARCH RESULTS pages
+# on job boards, staffing agencies, or aggregators, not one company's
+# own career page. Kept separate so it's easy to add, remove, or
+# disable this category independently of direct-employer companies —
+# same pattern as job_boards.yaml in the original Munich/Zurich
+# tracker this project was cloned from.
+#
+# Three sub-groups:
+#
+#   1. Dedicated ESG/climate job boards — NachhaltigeJobs.de
+#      (Germany's CSR/ESG/Umwelt job board, Munich-filtered) and
+#      ClimateTechList.com (9,000+ listings from 500+ climate tech
+#      companies worldwide, Munich-filtered). Both are niche boards
+#      built specifically for this field, not general aggregators —
+#      everything on them is already sustainability-relevant.
+#
+#   2. Employment/staffing agencies with a sustainability practice —
+#      Randstad, Michael Page, Robert Walters (general staffing
+#      firms with dedicated ESG/Nachhaltigkeit search filters), and
+#      LP impact (a boutique recruiter specializing ONLY in ESG
+#      roles). Doesn't need to be strictly ESG-titled to be useful
+#      here — anything matching the broader CV (environmental,
+#      program/project officer, regulatory affairs, etc. — see
+#      cv_profile.yaml) is picked up too.
+#
+# IMPORTANT, READ BEFORE ADDING MORE: agency listings often anonymize
+# the real hiring company ("Our client is a leading..."), so rows
+# sourced from an agency may show the AGENCY's name in the tracker's
+# Company column, not the actual employer — click through to find
+# out, same as you'd have needed to manually. This is a known
+# trade-off, not a bug. NachhaltigeJobs.de and ClimateTechList.com
+# don't anonymize postings, so this caveat is lighter for those two.
+#
+# Same schema as companies.yaml. "city" is a nominal placeholder for
+# the agency entries — routing is driven by each individual posting's
+# own location text via the existing Munich-area matching
+# (src/matcher.py), exactly like every other entry.
+companies:
+  - name: NachhaltigeJobs.de (Munich)
+    city: Munich
+    careers_url: https://www.nachhaltigejobs.de/jobs/muenchen
+    ats: auto
+    board_token: ""
+    assume_local: true
+  - name: ClimateTechList (Munich)
+    city: Munich
+    careers_url: https://www.climatetechlist.com/search/text/Munich
+    ats: auto
+    board_token: ""
+    assume_local: true
+  - name: Randstad Germany (Nachhaltigkeit)
+    city: Munich
+    careers_url: https://www.randstad.de/jobs/q-nachhaltigkeit/l-m%C3%BCnchen/
+    ats: auto
+    board_token: ""
+  - name: Michael Page Germany (Nachhaltigkeit)
+    city: Munich
+    careers_url: https://www.michaelpage.de/jobs/nachhaltigkeit/m%C3%BCnchen
+    ats: auto
+    board_token: ""
+  - name: Robert Walters Germany (Sustainability)
+    city: Munich
+    careers_url: https://www.robertwalters.de/en/jobs.html?keywords=sustainability
+    ats: auto
+    board_token: ""
+  - name: Hays Germany (Green Business)
+    city: Munich
+    careers_url: https://www.hays.de/personaldienstleister/fachgebiet-green-business
+    ats: auto
+    board_token: ""
+  - name: LP impact (ESG recruiter)
+    city: Munich
+    careers_url: https://www.lp-impact.com/
+    ats: auto
+    board_token: ""

@@ -1,15 +1,15 @@
 # Job Tracker — Greater Munich, ESG / Sustainability roles
 
 A personal job scraper that checks a curated list of company career
-pages directly, plus a handful of genuinely legitimate aggregators —
-dedicated ESG/climate job boards, staffing agencies with their own
-candidate-facing listings, and Germany's official Bundesagentur für
-Arbeit API. Deliberately excludes LinkedIn, XING, StepStone, Indeed,
-and similar platforms: all of them explicitly prohibit automated
-scraping in their terms of service and actively enforce it technically
-(anti-bot detection, CAPTCHAs, account bans) — see the note in
-`config/arbeitsagentur_searches.yaml` for why the Bundesagentur API is
-a different, legitimate case.
+pages directly, plus a couple of genuinely legitimate exceptions:
+Germany's official Bundesagentur für Arbeit API (Section 1 and 2),
+and dedicated remote/EU job boards (Section 3 only). Deliberately
+excludes LinkedIn, XING, StepStone, Indeed, and similar platforms:
+all of them explicitly prohibit automated scraping in their terms of
+service and actively enforce it technically (anti-bot detection,
+CAPTCHAs, account bans) — see the note in
+`config/arbeitsagentur_searches.yaml` for why the Bundesagentur API
+is a different, legitimate case.
 
 This is a single-city, single-focus version of a tracker originally
 built for a PM job search: it's scoped to **Greater Munich only**
@@ -18,36 +18,28 @@ Dachau, and similar — see `src/matcher.py`, `MUNICH_KEYWORDS`), and
 retitled to catch **ESG / Sustainability / Carbon Accounting / Climate**
 roles instead of Project Manager roles.
 
-- `config/companies.yaml` (174 companies) — rebuilt from scratch
-  around ESG/Sustainability/Carbon/Climate relevance, not reused from
-  the original PM/aerospace/defense-focused tracker. Three groups:
-  climate-tech and ESG-software startups (Tanso, IntegrityNext,
-  envoria, Ororatech, and others from Munich's climate-tech scene),
-  ESG/sustainability consultancies (Anthesis, FTI Consulting, Baker
-  Tilly, WTS Group, EurA, Ramboll, Drees & Sommer, ERM, ACCONSIS, the
-  Big Four, TÜV SÜD), and large Munich-area corporates/institutions
-  with genuine sustainability or ESG-reporting functions (finance/
-  insurance, energy/utilities, industrials with real decarbonization
-  programs, plus public sector and research). Everything defense/
-  space/military-adjacent from the original list was dropped as not
-  relevant to this search.
-- `config/cv_profile.yaml` — derived from your CV: title keywords
-  (ESG, Sustainability, Nachhaltigkeit, Carbon, Climate, CSRD, etc.)
-  and scoring keywords (GHG Protocol, EXIOBASE/EORA, ISAE 3000, Scope
-  1/2/3, EU Taxonomy, and your technical toolkit).
-
 Feeds a single `data/job_tracker.xlsx` with **three sheets**:
 
-- **"Jobs"** — sustainability/ESG-relevant roles in Munich, sorted by
-  relevance score (highest first).
-- **"General Roles"** — a deliberately broad fallback sheet: office
-  management, secretarial, administrative assistant, receptionist,
-  and similar roles in Munich, regardless of ESG fit.
+- **"Jobs"** — sustainability/ESG-relevant roles in Munich, picked
+  directly from company career pages only (no job boards or staffing
+  agencies) plus the Bundesagentur API's real-employer search
+  results. Sorted by relevance score (highest first).
+- **"Munich Internships & Trainee"** — Praktikum/Trainee
+  postings in Munich, in **any field**, not just sustainability and
+  not restricted to office/admin work. Werkstudent (working-student)
+  roles are deliberately excluded — internships and traineeships
+  only. Still scored against Prabha's actual CV themes purely to
+  rank results, never to exclude anything (no relevance floor). This
+  sheet used to be called "General Roles" and covered generic
+  permanent office/admin work — if your tracker file still has that
+  old sheet, it's now an inert leftover; delete it by hand in Excel
+  if you want it gone.
 - **"Remote Sustainability (Europe)"** — fully remote ESG/
   sustainability roles anywhere in Europe (not scoped to Munich),
-  sourced from dedicated climate/ESG job boards. Senior/leadership
-  titles are excluded everywhere, and this sheet specifically gives
-  a small ranking boost to junior/entry-level titles.
+  sourced from dedicated climate/ESG job boards and EURES, the EU's
+  own official job mobility portal. Senior/leadership titles are
+  excluded everywhere, and this sheet specifically gives a small
+  ranking boost to junior/entry-level titles.
 
 No score threshold is applied on any sheet by default — every job
 matching its title + location filter is shown, nothing is excluded
@@ -62,82 +54,79 @@ instead of this file** — it walks through every click.
    workflow" (or automatically every morning, ~06:30 Munich time; see
    `.github/workflows/daily_scrape.yml` if you want to change or turn
    off the schedule).
-2. `src/main.py` scrapes every company in `config/companies.yaml`
-   (via `src/ats_scrapers.py` — same underlying scraping engine as
-   the original tracker, including a last-resort real-browser render
-   for JavaScript-heavy career sites):
-   - keeps only postings whose title looks like an ESG/sustainability
-     role, AND whose location text explicitly confirms Munich or one
-     of its commuter towns (not the whole surrounding state/country)
-   - for postings that matched but came back with no description text,
-     fetches the job's own posting page and pulls the text from there
-   - scores everything that matched against your CV
-     (`config/cv_profile.yaml`, via `src/matcher.py`) and adds it to
-     the tracker (`src/tracker.py`)
+2. `src/main.py` scrapes two separate pools:
+   - **Munich pool** (`config/companies.yaml` + `general_roles_companies.yaml`
+     + `bavaria_directory_companies.yaml` + `arbeitsagentur_searches.yaml`)
+     — each company is scraped once, then checked against BOTH the
+     sustainability profile (→ "Jobs") and the internships/traineeships
+     profile (→ "Munich Internships & Trainee"). A posting can
+     legitimately land in both sheets if it matches both title lists.
+   - **Remote pool** (`config/remote_sustainability_companies.yaml`)
+     — scraped separately, checked against the remote-Europe profile,
+     confirmed explicitly remote (not just blank-location) and not
+     restricted to a non-EU country.
 3. The workflow commits the updated Excel file (and the generated
    `docs/index.html` webpage) back to the repository.
 4. The monthly reset workflow (manual-trigger-only by default, can be
-   put back on autopilot) archives the current tracker into
-   `archive/` and starts fresh.
+   put back on autopilot) archives all three sheets into `archive/`
+   and starts fresh.
 
 ## Files you might want to edit
 
-- `config/companies.yaml` (177 companies) — add/remove companies, or
+- `config/companies.yaml` (187 companies) — add/remove companies, or
   fix a `careers_url`/`ats` that isn't returning results. Set
   `assume_local: true` on a company only if it's a genuine single-
   Munich-office company — see the comment at the top of the file for
-  what that flag does.
-- `config/esg_job_boards.yaml` — dedicated ESG/climate job boards
-  (NachhaltigeJobs.de, ClimateTechList.com) plus employment agencies
-  with a sustainability practice (Randstad, Michael Page, Robert
-  Walters, Hays, LP impact). Feeds the "Jobs" sheet.
+  what that flag does. Feeds the "Jobs" sheet.
+- `config/cv_profile.yaml` — the sustainability/ESG title list and
+  scoring, feeds the "Jobs" sheet.
 - `config/general_roles_companies.yaml` — general staffing agencies
-  (Robert Half, Randstad, Adecco, Manpower) and a few smaller Munich
-  creative/communication agencies, specifically for the "General
-  Roles" fallback sheet.
+  (Robert Half, DIS AG, Amadeus Fire, Randstad, Adecco, Manpower),
+  international schools, and a few smaller Munich creative agencies.
+  Feeds the "Munich Internships & Trainee" sheet alongside
+  everything else in the Munich pool.
+- `config/general_roles_profile.yaml` — internship/trainee-only title
+  list (deliberately excludes Werkstudent and permanent roles), plus
+  CV-relevance scoring keywords used purely for ranking. No score
+  floor by design. Feeds the "Munich Internships & Trainee"
+  sheet.
 - `config/bavaria_directory_companies.yaml` — 165 Munich-metro-area
   companies imported from a broader Bavaria-wide business directory
   (mostly small local businesses, not sustainability-specific). Feeds
-  both sheets like everything else in the Munich pool — kept in its
-  own file since it's a large, unvetted batch, easy to trim later.
+  both Munich sheets like everything else in the pool.
 - `config/arbeitsagentur_searches.yaml` — real, targeted searches
   against Germany's official Bundesagentur für Arbeit Jobsuche API
   (a genuine public REST API, not a scraped website — see
-  `src/ats_scrapers.py`, `scrape_arbeitsagentur`). Ten searches
-  covering both sustainability terms and general office/admin terms,
-  each within 30km of Munich. Unlike agency sources, this API returns
-  the real hiring employer for every posting.
-- `config/cv_profile.yaml` — the sustainability/ESG title list and
-  scoring, feeds the "Jobs" sheet.
-- `config/general_roles_profile.yaml` — the broad office/admin title
-  list, feeds the "General Roles" sheet. No score floor by design.
-
-- `config/remote_sustainability_companies.yaml` — a small set of
-  dedicated remote/EU climate job boards (EuroClimateJobs.com,
-  Climatebase, climate.jobs). Feeds the "Remote Sustainability
-  (Europe)" sheet — scraped separately from the Munich pool.
+  `src/ats_scrapers.py`, `scrape_arbeitsagentur`). Six sustainability
+  searches (feed "Jobs") plus one broad `angebotsart=34`
+  (Praktikum/Trainee, any field) search covering every employer
+  within 30km of Munich (feeds "Munich Internships & Trainee"). Unlike
+  agency sources, this API returns the real hiring employer for every
+  posting.
+- `config/esg_job_boards.yaml` — kept in the repo but **no longer
+  loaded** into the Munich pool (NachhaltigeJobs.de, ClimateTechList,
+  Randstad/Michael Page/Robert Walters/Hays/LP impact). Add it back in
+  `src/main.py` if you ever want board/agency sources back in "Jobs."
+- `config/remote_sustainability_companies.yaml` — dedicated remote/EU
+  climate job boards (EuroClimateJobs.com, Climatebase, climate.jobs)
+  plus EURES, the EU's own official job mobility portal. Feeds the
+  "Remote Sustainability (Europe)" sheet — scraped separately from
+  the Munich pool.
 - `config/remote_sustainability_profile.yaml` — same field as
   `cv_profile.yaml`, but for the remote-Europe sheet. No score floor.
-
-Every company in companies.yaml / esg_job_boards.yaml /
-general_roles_companies.yaml is scraped once and checked against
-BOTH the sustainability and general-roles profiles — a posting can
-legitimately show up in both sheets if it matches both title lists.
-The remote-Europe sheet uses its own, separate scrape of the boards
-in remote_sustainability_companies.yaml.
 
 ## How results are prioritized
 
 - **Seniority**: postings with clear senior/leadership titles
   (Senior, Head of, Director, VP, Chief, Teamleiter, etc.) are
-  excluded — the search targets associate/mid/junior/internship
-  roles. Plain "Manager" titles are NOT excluded, since in German/EU
-  postings that's a standard mid-level title, not "senior manager."
-- **Internships**: not a separate category — a Praktikum/Werkstudent/
-  Internship posting lands wherever its own title already would
-  (an ESG-titled internship in "Jobs," an office-titled one in
-  "General Roles"), and gets the same junior/entry-level ranking
-  boost as any other junior title in that sheet.
+  excluded everywhere — the search targets associate/mid/junior/
+  internship roles. Plain "Manager" titles are NOT excluded, since in
+  German/EU postings that's a standard mid-level title, not "senior
+  manager."
+- **Internships**: the "Munich Internships & Trainee" sheet only
+  accepts Praktikum/Praktikant/Trainee/Internship/Intern titles —
+  Werkstudent is deliberately excluded, and the field doesn't matter
+  (sustainability, marketing, finance, engineering, anything).
 - **Recency**: postings that look 21 days old or newer (when the
   platform exposes a date at all) get a small score boost, so they
   sort nearer the top. Undated postings are neither boosted nor
@@ -147,29 +136,33 @@ in remote_sustainability_companies.yaml.
 
 ESG/Sustainability is a narrow specialty — most companies have 0-2
 such roles open on any given day, even at genuinely relevant
-employers. Adding the dedicated job boards and agencies above should
-meaningfully raise the hit rate, since they're pre-filtered to this
-field rather than scraped one generic corporate career page at a
-time. It still accumulates daily and doesn't reset until the monthly
-archive, so the value compounds over weeks rather than showing up all
-at once.
+employers. The Bundesagentur searches should meaningfully raise the
+hit rate for "Jobs" without relying on job boards, since they query
+the largest job database in Germany directly. It still accumulates
+daily and doesn't reset until the monthly archive, so the value
+compounds over weeks rather than showing up all at once.
 
 ## Tracker columns
 
 Job Posted (when the platform provides it — blank for companies where
 it isn't available), Company, Job Title, Relevance Score (1-10, 10 =
-best match to your CV), Location, and URL. Sorted by Relevance Score,
-highest first, every run.
+best match), Location, and URL. Sorted by Relevance Score, highest
+first, every run.
 
-**Location filtering** is strict: a job only survives if its own
-location text explicitly names Munich or one of its commuter towns
-(see `src/matcher.py`, `MUNICH_KEYWORDS`) — not the whole surrounding
-Bavaria/Germany. This matters because some platforms (Lever,
-Greenhouse, SmartRecruiters, Workday) return a company's entire global
-job board in one call, so a Munich-area company can easily have
-postings in, say, Berlin or Frankfurt mixed in — those get dropped,
-along with anything whose location is too vague to confirm at all
-(blank, or just "Germany (Remote)").
+**Location filtering** on the two Munich sheets is strict: a job only
+survives if its own location text explicitly names Munich or one of
+its commuter towns (see `src/matcher.py`, `MUNICH_KEYWORDS`) — not the
+whole surrounding Bavaria/Germany. This matters because some
+platforms (Lever, Greenhouse, SmartRecruiters, Workday) return a
+company's entire global job board in one call, so a Munich-area
+company can easily have postings in, say, Berlin or Frankfurt mixed
+in — those get dropped, along with anything whose location is too
+vague to confirm at all (blank, or just "Germany (Remote)").
+
+**Location filtering** on the remote-Europe sheet is different:
+postings must explicitly say "remote" (not just have a blank
+location) and must not explicitly restrict to a non-EU country — see
+`src/matcher.py`, `REMOTE_KEYWORDS` and `NON_EU_ONLY_KEYWORDS`.
 
 ## Running it yourself, locally (optional)
 

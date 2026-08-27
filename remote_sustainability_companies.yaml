@@ -1,0 +1,53 @@
+# Sources for the "Remote Sustainability (Europe)" sheet — fully
+# remote ESG/sustainability/climate roles anywhere in Europe, not
+# scoped to Munich. Per request, this section is deliberately open to
+# both job boards and direct companies, whatever surfaces the most
+# genuine remote-Europe postings.
+#
+# Dedicated climate/sustainability job boards (not general
+# aggregators):
+#   - EuroClimateJobs.com — climate and energy jobs specifically in
+#     Europe.
+#   - Climatebase.org — the largest climate careers platform
+#     globally (1M+ users/year); lists remote, hybrid, AND on-site
+#     roles worldwide, not just remote-Europe ones.
+#   - climate.jobs — part of the Remote Climate Jobs network; also
+#     mixes remote, hybrid, and on-site postings.
+#   - EURES (eures.europa.eu) — the European Commission's own official
+#     EU-wide job mobility portal, covering 31 countries. No public
+#     API like Bundesagentur's, but it's an official public-good
+#     portal built for exactly this kind of search — no anti-scraping
+#     stance, unlike LinkedIn/XING.
+#
+# Deliberately NOT using assume_local-style "blank location = pass"
+# logic here (unlike companies.yaml / general_roles_companies.yaml):
+# these boards mix remote, hybrid, on-site, and non-European postings,
+# so a blank location can't be safely assumed to mean "remote and in
+# Europe." Every posting is instead checked for explicit "remote"
+# language and screened against a short list of "restricted to a
+# non-EU country" phrases — see src/matcher.py, REMOTE_KEYWORDS and
+# NON_EU_ONLY_KEYWORDS. Only EuroClimateJobs.com and EURES are
+# themselves Europe-scoped by construction, but even there, only
+# postings that explicitly say "remote" are kept — an on-site EU role
+# isn't what this sheet is for.
+companies:
+  - name: EuroClimateJobs.com
+    city: Remote
+    careers_url: https://www.euroclimatejobs.com/
+    ats: auto
+    board_token: ""
+  - name: Climatebase (remote)
+    city: Remote
+    careers_url: https://climatebase.org/jobs
+    ats: auto
+    board_token: ""
+  - name: climate.jobs (remote)
+    city: Remote
+    careers_url: https://climate.jobs/
+    ats: auto
+    board_token: ""
+  - name: EURES (EU job mobility portal)
+    city: Remote
+    careers_url: "https://europa.eu/eures/portal/jv-se/search?page=1&resultsPerPage=50&orderBy=BEST_MATCH&keywordsEverywhere=sustainability&lang=en"
+    ats: auto
+    board_token: ""
