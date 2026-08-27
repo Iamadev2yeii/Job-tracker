@@ -611,7 +611,11 @@ def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
     if "size=" not in url:
         url += ("&" if "?" in url else "?") + "size=100"
     if "page=" not in url:
-        url += "&page=0"
+        # The API's own docs are explicit: pages are 1-indexed
+        # ("Seite (beginnend mit 1)"). page=0 is invalid and returns
+        # HTTP 400 — every one of this project's searches hit exactly
+        # that bug until this was caught in a real run's log.
+        url += "&page=1"
 
     try:
         resp = requests.get(

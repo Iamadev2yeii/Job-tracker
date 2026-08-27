@@ -100,6 +100,30 @@ def is_excluded_seniority(title: str) -> bool:
     return any(term in t for term in SENIORITY_EXCLUDE)
 
 
+# Titles that explicitly name a language requirement Prabha doesn't
+# have (her CV lists German B2/C1 and, implicitly, English — nothing
+# else). Added after a Korean-language-required internship scored
+# highly and appeared in "Munich Internships & Trainee": the broad,
+# any-field Bundesagentur search (angebotsart=34, no keyword) will
+# happily surface market-specific trainee programs (Korea/China/Japan
+# desks are common at Munich corporates) that Prabha has no realistic
+# way to do. This is deliberately checked against the TITLE only —
+# a language mentioned only deep in a job description is often a
+# "nice to have," but one prominent enough to be in the title is
+# almost always a hard requirement.
+LANGUAGE_EXCLUDE = [
+    "korean", "koreanisch", "chinese", "chinesisch", "mandarin",
+    "japanese", "japanisch", "russian", "russisch", "arabic", "arabisch",
+    "turkish", "türkisch", "vietnamese", "vietnamesisch", "thai",
+    "hindi", "polish", "polnisch",
+]
+
+
+def is_excluded_language(title: str) -> bool:
+    t = title.lower()
+    return any(term in t for term in LANGUAGE_EXCLUDE)
+
+
 def location_status(location: str) -> str:
     """
     Returns "confirmed" (location text names the Munich metro area),
@@ -119,9 +143,9 @@ def location_status(location: str) -> str:
 
 def filter_by_title_only(jobs: list[dict[str, Any]], cv_profile: dict[str, Any]) -> list[dict[str, Any]]:
     """
-    Title check plus seniority exclusion — no location decision yet
-    (see main.py's scrape_munich docstring for why that's done later,
-    after enrichment).
+    Title check plus seniority and language exclusion — no location
+    decision yet (see main.py's scrape_munich docstring for why
+    that's done later, after enrichment).
     """
     must_match = cv_profile.get("title_must_match", [])
     return [
@@ -129,6 +153,7 @@ def filter_by_title_only(jobs: list[dict[str, Any]], cv_profile: dict[str, Any])
         if job.get("title")
         and title_matches(job["title"], must_match)
         and not is_excluded_seniority(job["title"])
+        and not is_excluded_language(job["title"])
     ]
 
 
