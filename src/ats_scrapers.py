@@ -637,17 +637,24 @@ def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
         logger.warning("GET %s failed: %s", url, exc)
         return []
 
-    postings = data.get("stellenangebote", [])
-    if not postings:
-        # Diagnostic for the "200 OK but genuinely nothing came back"
-        # case — this happened for every search in a real run right
-        # after the page=0->400 bug was fixed, and a plain "EMPTY" log
-        # line gave no way to tell a real zero-result query apart from
-        # a still-broken one. maxErgebnisse (if present) is the API's
-        # own reported total match count, independent of pagination.
-        total = data.get("maxErgebnisse")
-        logger.info("  DIAG (Bundesagentur): 0 postings returned. maxErgebnisse=%s, response keys=%s",
-                    total, list(data.keys()))
+    postings = data.get("stellenangebote") or data.get("ergebnisliste") or []
+    if not postings and data.get("maxErgebnisse"):
+        # This exact situation happened in a real run: maxErgebnisse
+        # (the API's own reported total match count) showed 463 real
+        # hits for one search, yet the parsed job list came back
+        # empty. Root cause: /pc/v6/jobs uses "ergebnisliste" as the
+        # results array, not "stellenangebote" — that field name is
+        # correct for /pc/v4/jobs (which is what most of this API's
+        # third-party documentation and examples actually reference),
+        # but v6 renamed it. Checking both keys above fixes it; this
+        # diagnostic stays in place in case a future API version
+        # renames it again.
+        logger.warning(
+            "  DIAG (Bundesagentur): maxErgebnisse=%s but 0 postings parsed — check response key names: %s",
+            data.get("maxErgebnisse"), list(data.keys()),
+        )
+    elif not postings:
+        logger.info("  DIAG (Bundesagentur): 0 postings returned. response keys=%s", list(data.keys()))
 
     jobs = []
     for posting in postings:

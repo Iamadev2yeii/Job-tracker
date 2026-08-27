@@ -29,6 +29,12 @@ All three sheets share the same behaviour:
   - Every run, rows scoring below that sheet's min_score are pruned —
     applies to rows already sitting in the sheet too. All three
     default to 0 (off).
+  - Every run, rows whose title now fails the universal seniority or
+    language exclusion checks (src/matcher.py) are also pruned — a
+    rule tightened after a bad row was already added (e.g. a language
+    exclusion added after a Korean-language posting made it in) would
+    otherwise leave that row sitting there forever, since new runs
+    only ever add rows, they don't re-check what's already there.
   - Each sheet is re-sorted by Relevance Score (highest first) every
     run, so the best matches are always at the top.
   - archive_and_reset() (called from reset_tracker.py) archives ALL
@@ -168,6 +174,32 @@ def _prune_below_score(ws: Worksheet, min_score: int) -> int:
     return len(rows_to_delete)
 
 
+def _prune_excluded_titles(ws: Worksheet) -> int:
+    """
+    Deletes any row whose Job Title now fails the universal seniority
+    or language exclusion checks (src/matcher.py). These checks apply
+    at match time to NEW postings, but a title-matching rule tightened
+    after a row was already added (e.g. the language exclusion added
+    after a Korean-language internship made it into the sheet) would
+    otherwise leave that row sitting there forever — the sheet only
+    ever gained rows, nothing ever re-checked what was already in it.
+    This runs every update, on every sheet, so a tightened rule
+    retroactively cleans up past runs too, not just future ones.
+    """
+    from src.matcher import is_excluded_seniority, is_excluded_language
+
+    title_col = COLUMNS.index("Job Title") + 1
+    rows_to_delete = [
+        row
+        for row in range(2, ws.max_row + 1)
+        if (title := ws.cell(row=row, column=title_col).value)
+        and (is_excluded_seniority(title) or is_excluded_language(title))
+    ]
+    for row in reversed(rows_to_delete):
+        ws.delete_rows(row)
+    return len(rows_to_delete)
+
+
 def _sort_by_relevance(ws: Worksheet, newly_added_urls: set[str], fill: PatternFill) -> None:
     """Re-sorts all data rows by Relevance Score (highest first), then
     re-applies the "new" highlight to whichever URLs were added this
@@ -229,8 +261,12 @@ def _update_sheet(
         added += 1
 
     pruned = _prune_below_score(ws, min_score)
+    pruned_excluded = _prune_excluded_titles(ws)
     _sort_by_relevance(ws, newly_added_urls, fill)
-    return {"added": added, "already_tracked": already_tracked, "pruned": pruned, "total_rows": ws.max_row - 1}
+    return {
+        "added": added, "already_tracked": already_tracked,
+        "pruned": pruned + pruned_excluded, "total_rows": ws.max_row - 1,
+    }
 
 
 def update_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0) -> dict[str, int]:
