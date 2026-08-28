@@ -60,16 +60,11 @@ title_must_match:
   - "environmental analyst"
   - "regulatory affairs"
   - "impact assessment"
-  - "emissionshandel"
-  - "erneuerbare energien"
-  - "renewable energy"
   - "nachhaltigkeitsberater"
   - "klimabilanz"
   - "treibhausgas"
   - "greenhouse gas"
   - "dekarbonisierung"
-  - "energiewende"
-  - "kreislaufwirtschaft"
 
 # main_min_score:
 #   No score floor is applied — every job that passes the title +
@@ -98,6 +93,21 @@ score_ceiling: 12
 #   ESG portfolio analysis, sustainable finance taxonomies, and her
 #   technical/data-analysis toolkit.
 scoring_keywords:
+  # "erneuerbare energien" / "renewable energy" / "kreislaufwirtschaft"
+  # / "energiewende" / "emissionshandel" used to be in title_must_match
+  # (the strict gate) — removed after testing confirmed they let
+  # through non-ESG-function jobs in those industries (e.g.
+  # "Vertriebsmitarbeiter Erneuerbare Energien" — a sales rep role,
+  # not a sustainability function). They're real, relevant themes
+  # though, so they stay here as ranking signals instead: a job that
+  # already passed the gate via a genuine ESG-function term (esg,
+  # nachhaltigkeit, klimaschutz, etc.) ranks higher if it also touches
+  # these themes, without letting them serve as a gate on their own.
+  - {term: "erneuerbare energien", weight: 1}
+  - {term: "renewable energy", weight: 1}
+  - {term: "kreislaufwirtschaft", weight: 1}
+  - {term: "energiewende", weight: 1}
+  - {term: "emissionshandel", weight: 2}
   - {term: "carbon accounting", weight: 3}
   - {term: "ghg protocol", weight: 3}
   - {term: "scope 1", weight: 2}

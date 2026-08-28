@@ -751,3 +751,24 @@ companies:
   board_token: ''
   sustainability_related: true
   assume_local: true
+- name: Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt
+  city: Berlin
+  careers_url: https://www.berlin.de/sen/uvk/service/karriere/
+  ats: auto
+  board_token: ''
+  sustainability_related: true
+  assume_local: true
+- name: Umweltbundesamt (UBA)
+  city: Berlin
+  careers_url: https://www.umweltbundesamt.de/das-uba/das-uba-als-arbeitgeber
+  ats: auto
+  board_token: ''
+  sustainability_related: true
+  assume_local: true
+- name: Bundesministerium für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit (BMUKN)
+  city: Berlin
+  careers_url: https://jobs.bundesumweltministerium.de/
+  ats: auto
+  board_token: ''
+  sustainability_related: true
+  assume_local: true

@@ -17,6 +17,20 @@
 # most agency sources) — main.py preserves that instead of overwriting
 # it with this entry's own display name.
 #
+# `assume_relevant_title` (skip our own title check, trust the API's
+# own thematic search) used to be set on every search here. Removed
+# entirely after a real run showed why that was wrong for anything
+# broader than the field/role itself: a search like "Windenergie" (an
+# INDUSTRY, not a job function) returned a ~95%+ "match" rate under
+# that bypass — meaning it let through almost any job at any wind-
+# energy company (electricians, warehouse staff, sales reps), not
+# just sustainability-function roles Prabha could actually use. Every
+# search below now goes through the same strict title_must_match
+# check as every other source in this project, no exceptions — a
+# posting only counts if its own title actually names an ESG/
+# sustainability function (Nachhaltigkeit, ESG, Klimaschutz, etc.),
+# regardless of which keyword search happened to surface it.
+#
 # The 4 office/admin-specific searches (Büromanagement, Sekretariat,
 # Assistenz, Empfang) that used to be here were removed once the
 # "Internships & Traineeships" sheet was repurposed to internships/
@@ -25,195 +39,156 @@
 # angebotsart=34 (Praktikum/Trainee) search below already covers
 # office-track internships too, alongside every other field.
 companies:
-#
-# Expanded from 6 to 30 keyword searches (plus the broad
-# angebotsart=34 internship one) -- each additional keyword is a
-# real, zero-fabrication-risk source: it queries Germany's actual
-# job database directly rather than requiring any company to be
-# hand-named, so this is the single most scalable way to widen
-# coverage. New terms cover renewable energy, circular economy,
-# hydrogen, recycling, biodiversity, sustainable finance,
-# sustainable construction, and more.
 - name: Bundesagentur für Arbeit (Nachhaltigkeit, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeit&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (ESG, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=ESG&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Klimaschutz, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimaschutz&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Umweltmanagement, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltmanagement&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Nachhaltigkeitsmanager, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeitsmanager&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (CO2 Bilanzierung, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=CO2-Bilanzierung&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Umweltschutz, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltschutz&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Klimawandel, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimawandel&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Erneuerbare Energien, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Erneuerbare%20Energien&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Energiewende, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Energiewende&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Kreislaufwirtschaft, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Kreislaufwirtschaft&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Emissionshandel, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Emissionshandel&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Treibhausgas, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Treibhausgas&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Klimaneutralitaet, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimaneutralitaet&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Dekarbonisierung, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Dekarbonisierung&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Nachhaltigkeitsberater, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeitsberater&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Umweltingenieur, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltingenieur&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Solarenergie, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Solarenergie&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Windenergie, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Windenergie&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Wasserstoff, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Wasserstoff&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Recycling, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Recycling&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Abfallwirtschaft, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Abfallwirtschaft&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Oekobilanz, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Oekobilanz&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Biodiversitaet, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Biodiversitaet&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Naturschutz, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Naturschutz&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Sustainable Finance, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Sustainable%20Finance&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Klimarisiko, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimarisiko&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Ressourceneffizienz, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Ressourceneffizienz&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Nachhaltiges Bauen, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltiges%20Bauen&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Umweltaudit, München)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltaudit&wo=M%C3%BCnchen&umkreis=30
   ats: arbeitsagentur_api
   board_token: ''
-  assume_relevant_title: true
 - name: Bundesagentur für Arbeit (Praktikum/Trainee, München, alle Bereiche)
   city: Munich
   careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?angebotsart=34&wo=M%C3%BCnchen&umkreis=30

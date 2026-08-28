@@ -41,13 +41,6 @@ relevance_keywords:
   - "umweltschutz"
   - "csr"
   - "csrd"
-  - "green"
-  - "erneuerbare"
-  - "renewable"
-  - "energie"
-  - "energy"
-  - "circular economy"
-  - "kreislaufwirtschaft"
   - "biodiversity"
 
 main_min_score: 0
@@ -60,6 +53,23 @@ score_ceiling: 8
 # otherwise-irrelevant posting — almost any professional trainee
 # program description touches those words regardless of actual fit.
 scoring_keywords:
+  # "green" / "erneuerbare" / "renewable" / "energie" / "energy" /
+  # "circular economy" / "kreislaufwirtschaft" used to be in
+  # relevance_keywords (the strict gate) — removed after testing
+  # confirmed they let through non-ESG-function internships in those
+  # industries (e.g. "Praktikum Energiehandel" — an energy trading
+  # internship, not a sustainability function). They're real,
+  # relevant themes though, so they stay here as ranking signals: an
+  # internship that already passed the gate via a genuine ESG-
+  # function term ranks higher if it also touches these themes,
+  # without letting them serve as a gate on their own.
+  - {term: "green", weight: 1}
+  - {term: "erneuerbare", weight: 1}
+  - {term: "renewable", weight: 1}
+  - {term: "energie", weight: 1}
+  - {term: "energy", weight: 1}
+  - {term: "circular economy", weight: 1}
+  - {term: "kreislaufwirtschaft", weight: 1}
   - {term: "sustainability", weight: 2}
   - {term: "nachhaltigkeit", weight: 2}
   - {term: "esg", weight: 2}
