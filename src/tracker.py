@@ -51,7 +51,7 @@ from __future__ import annotations
 
 import datetime as dt
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, PatternFill
@@ -182,27 +182,49 @@ def _prune_below_score(ws: Worksheet, min_score: int) -> int:
     return len(rows_to_delete)
 
 
-def _prune_excluded_titles(ws: Worksheet) -> int:
+def _prune_excluded_titles(ws: Worksheet, revalidate_fn: "Callable[[str, str], bool] | None" = None) -> int:
     """
     Deletes any row whose Job Title now fails the universal seniority
-    or language exclusion checks (src/matcher.py). These checks apply
-    at match time to NEW postings, but a title-matching rule tightened
-    after a row was already added (e.g. the language exclusion added
-    after a Korean-language internship made it into the sheet) would
-    otherwise leave that row sitting there forever — the sheet only
-    ever gained rows, nothing ever re-checked what was already in it.
-    This runs every update, on every sheet, so a tightened rule
-    retroactively cleans up past runs too, not just future ones.
+    or language exclusion checks (src/matcher.py), OR (if revalidate_fn
+    is given) no longer passes its sheet's own title-relevance check.
+
+    The revalidate_fn addition matters a lot in practice: a real run
+    let the Bundesagentur searches skip title-relevance checking
+    entirely for a while, which flooded every sheet with hundreds of
+    industry-adjacent-but-irrelevant rows (electricians, warehouse
+    staff, etc. from broad searches like "Windenergie"). Fixing the
+    matching logic only stops NEW bad rows — without this, all of
+    that existing noise would sit in the sheet forever, since a run
+    only ever adds rows, it doesn't normally re-check what's already
+    there. revalidate_fn is built in main.py from each sheet's actual
+    profile, so this cleans up past runs' mistakes too, not just
+    prevents future ones.
+
+    Only the Job Title and Company columns are available for this
+    re-check (the tracker doesn't store description text) — a row
+    that was originally matched via description text rather than its
+    own title (see src/matcher.py, _combined_text) could theoretically
+    get pruned here even though it was a legitimate match. That's an
+    accepted, conservative trade-off given how much worse the
+    alternative (leaving hundreds of confirmed-irrelevant rows in
+    place) is.
     """
     from src.matcher import is_excluded_seniority, is_excluded_language
 
     title_col = COLUMNS.index("Job Title") + 1
-    rows_to_delete = [
-        row
-        for row in range(2, ws.max_row + 1)
-        if (title := ws.cell(row=row, column=title_col).value)
-        and (is_excluded_seniority(title) or is_excluded_language(title))
-    ]
+    company_col = COLUMNS.index("Company") + 1
+    rows_to_delete = []
+    for row in range(2, ws.max_row + 1):
+        title = ws.cell(row=row, column=title_col).value
+        if not title:
+            continue
+        if is_excluded_seniority(title) or is_excluded_language(title):
+            rows_to_delete.append(row)
+            continue
+        if revalidate_fn is not None:
+            company = ws.cell(row=row, column=company_col).value
+            if not revalidate_fn(title, company):
+                rows_to_delete.append(row)
     for row in reversed(rows_to_delete):
         ws.delete_rows(row)
     return len(rows_to_delete)
@@ -248,7 +270,8 @@ def _build_row(job: dict[str, Any], url: str) -> list:
 
 
 def _update_sheet(
-    wb: Workbook, sheet_name: str, fill: PatternFill, new_jobs: list[dict[str, Any]], min_score: int
+    wb: Workbook, sheet_name: str, fill: PatternFill, new_jobs: list[dict[str, Any]], min_score: int,
+    revalidate_fn: "Callable[[str, str], bool] | None" = None,
 ) -> dict[str, int]:
     ws = wb[sheet_name]
     existing_urls = _existing_urls(ws)
@@ -269,7 +292,7 @@ def _update_sheet(
         added += 1
 
     pruned = _prune_below_score(ws, min_score)
-    pruned_excluded = _prune_excluded_titles(ws)
+    pruned_excluded = _prune_excluded_titles(ws, revalidate_fn)
     _sort_by_relevance(ws, newly_added_urls, fill)
     return {
         "added": added, "already_tracked": already_tracked,
@@ -277,42 +300,54 @@ def _update_sheet(
     }
 
 
-def update_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0) -> dict[str, int]:
+def update_tracker(
+    path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0,
+    revalidate_fn: "Callable[[str, str], bool] | None" = None,
+) -> dict[str, int]:
     """Updates the "Jobs" (Munich sustainability) sheet. Saves the file."""
     wb = load_or_create(path)
-    summary = _update_sheet(wb, SHEET_NAME, NEW_ROW_FILL, new_jobs, min_score)
+    summary = _update_sheet(wb, SHEET_NAME, NEW_ROW_FILL, new_jobs, min_score, revalidate_fn)
     path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(path)
     return summary
 
 
-def update_general_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0) -> dict[str, int]:
+def update_general_tracker(
+    path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0,
+    revalidate_fn: "Callable[[str, str], bool] | None" = None,
+) -> dict[str, int]:
     """Updates the "Munich Internships & Trainee" sheet. Saves
     the file. Called separately from update_tracker — each opens,
     updates its own sheet, and saves; the file just gets saved
     multiple times per run, which is harmless."""
     wb = load_or_create(path)
-    summary = _update_sheet(wb, GENERAL_SHEET_NAME, GENERAL_NEW_ROW_FILL, new_jobs, min_score)
+    summary = _update_sheet(wb, GENERAL_SHEET_NAME, GENERAL_NEW_ROW_FILL, new_jobs, min_score, revalidate_fn)
     path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(path)
     return summary
 
 
-def update_remote_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0) -> dict[str, int]:
+def update_remote_tracker(
+    path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0,
+    revalidate_fn: "Callable[[str, str], bool] | None" = None,
+) -> dict[str, int]:
     """Updates the "Remote Sustainability (Europe)" sheet. Saves the
     file. Called separately from the other two update_* functions."""
     wb = load_or_create(path)
-    summary = _update_sheet(wb, REMOTE_SHEET_NAME, REMOTE_NEW_ROW_FILL, new_jobs, min_score)
+    summary = _update_sheet(wb, REMOTE_SHEET_NAME, REMOTE_NEW_ROW_FILL, new_jobs, min_score, revalidate_fn)
     path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(path)
     return summary
 
 
-def update_berlin_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0) -> dict[str, int]:
+def update_berlin_tracker(
+    path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0,
+    revalidate_fn: "Callable[[str, str], bool] | None" = None,
+) -> dict[str, int]:
     """Updates the "Jobs - Berlin" sheet. Saves the file. Called
     separately from the other update_* functions."""
     wb = load_or_create(path)
-    summary = _update_sheet(wb, BERLIN_SHEET_NAME, BERLIN_NEW_ROW_FILL, new_jobs, min_score)
+    summary = _update_sheet(wb, BERLIN_SHEET_NAME, BERLIN_NEW_ROW_FILL, new_jobs, min_score, revalidate_fn)
     path.parent.mkdir(parents=True, exist_ok=True)
     wb.save(path)
     return summary

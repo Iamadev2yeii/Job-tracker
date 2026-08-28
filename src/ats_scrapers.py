@@ -692,9 +692,12 @@ def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
         # this whole integration — "beruf" and "titel" both came back
         # empty for every posting in a real run despite the API
         # genuinely returning matching jobs. Try every plausible name
-        # at once instead of guessing one at a time.
+        # at once instead of guessing one at a time. "hauptberuf" was
+        # confirmed real via a raw-response dump on an AUSBILDUNG
+        # (apprenticeship) posting, which uses a slightly different
+        # schema than a normal job posting.
         title = ""
-        for field in ("beruf", "titel", "stellenangebotsTitel", "stellenbezeichnung", "jobTitel", "title"):
+        for field in ("beruf", "titel", "stellenangebotsTitel", "stellenbezeichnung", "jobTitel", "title", "hauptberuf"):
             if posting.get(field):
                 title = posting[field]
                 break

@@ -88,9 +88,31 @@ OTHER_MAJOR_LOCATIONS = [
 ]
 
 
+import re as _re
+
+# Terms that are risky as plain substrings because they collide with
+# a common, unrelated real word — "intern" is a substring of
+# "International," so a permanent role titled "International ESG
+# Coordinator" would otherwise be wrongly classified as an internship
+# (confirmed with a real test case before this fix). Everything else
+# in this project deliberately uses plain substring matching, since
+# German compound words need it (e.g. "nachhaltigkeit" must match
+# inside "Nachhaltigkeitsmanager", where there's no word boundary
+# between the two halves) — this word-boundary check is intentionally
+# scoped to just this one problem term, not applied generally.
+_WORD_BOUNDARY_TERMS = {"intern"}
+
+
 def title_matches(title: str, must_match: list[str]) -> bool:
     t = title.lower()
-    return any(term.lower() in t for term in must_match)
+    for term in must_match:
+        term_lower = term.lower()
+        if term_lower in _WORD_BOUNDARY_TERMS:
+            if _re.search(rf"\b{_re.escape(term_lower)}\b", t):
+                return True
+        elif term_lower in t:
+            return True
+    return False
 
 
 def _combined_text(job: dict[str, Any]) -> str:
@@ -188,7 +210,10 @@ def filter_by_title_only(jobs: list[dict[str, Any]], cv_profile: dict[str, Any])
 
 
 def filter_internships(
-    jobs: list[dict[str, Any]], profile: dict[str, Any], sustainability_related_company: bool = False
+    jobs: list[dict[str, Any]],
+    profile: dict[str, Any],
+    sustainability_related_company: bool = False,
+    sustainability_company_names: "set[str] | None" = None,
 ) -> list[dict[str, Any]]:
     """
     For the "Munich Internships & Trainee" sheet specifically: a job
@@ -199,10 +224,28 @@ def filter_internships(
     Prabha's actual field (relevance_keywords, checked against title
     + description when available — see _combined_text) — UNLESS the
     posting comes from a company whose core business already IS that
-    field (sustainability_related_company=True, set per-entry in
-    companies.yaml), in which case any internship/trainee title at
-    that company counts, even a generically titled one like
-    "Praktikum Marketing" at a climate-tech startup.
+    field, in which case any internship/trainee title at that company
+    counts, even a generically titled one like "Praktikum Marketing"
+    at a climate-tech startup.
+
+    Two ways a posting can satisfy that exemption:
+      1. sustainability_related_company=True — the CONFIG ENTRY being
+         scraped is itself flagged `sustainability_related: true` in
+         companies.yaml. Works for normal one-entry-per-company
+         sources.
+      2. sustainability_company_names — a job's own "company" field
+         (already the REAL hiring employer for Bundesagentur-sourced
+         postings, set directly by scrape_arbeitsagentur) is checked
+         against this set. This matters specifically for the broad,
+         no-keyword "alle Bereiche" internship search: one search
+         entry returns postings from many different real employers,
+         so a single static per-entry flag can't capture "was THIS
+         particular posting's actual employer sustainability-related"
+         — checking the job's own company name can. Without this, a
+         generic-titled internship at a genuinely sustainability-
+         focused company (found via that broad search) would be
+         wrongly rejected, even though the identical posting scraped
+         directly from that company's own career page would pass.
 
     This is deliberately narrower than an earlier version of this
     sheet, which accepted ANY-field internships — that surfaced things
@@ -221,7 +264,12 @@ def filter_internships(
             continue
         if is_excluded_seniority(title) or is_excluded_language(title):
             continue
-        if sustainability_related_company or not relevance_keywords or title_matches(_combined_text(job), relevance_keywords):
+        is_sustainability_company = sustainability_related_company
+        if not is_sustainability_company and sustainability_company_names:
+            job_company = (job.get("company") or "").strip().lower()
+            if job_company and job_company in sustainability_company_names:
+                is_sustainability_company = True
+        if is_sustainability_company or not relevance_keywords or title_matches(_combined_text(job), relevance_keywords):
             result.append(job)
     return result
 
@@ -483,7 +531,17 @@ def _raw_score(description: str, title: str, keywords: list[dict[str, Any]]) -> 
 def score_job_1_to_10(description: str, title: str, keywords: list[dict[str, Any]], ceiling: int) -> int:
     raw = _raw_score(description, title, keywords)
     scaled = round((raw / ceiling) * 10) if ceiling else 0
-    return max(1, min(10, scaled))
+    # Floor is 3, not 1: every job reaching this function already
+    # passed its profile's title_must_match gate, meaning it's
+    # already confirmed topically relevant (its title genuinely names
+    # an ESG/sustainability function, an internship type, etc.) —
+    # scoring it down to the same rock-bottom "1" as a barely-relevant
+    # posting understates that, and previously left a large,
+    # undifferentiated pile-up of ties at the bottom with no way to
+    # tell "confirmed relevant, no extra CV-specific overlap" apart
+    # from "barely scraped by." A 3 floor leaves clear room above it
+    # (4-10) for postings that also hit specific CV keywords.
+    return max(3, min(10, scaled))
 
 
 def score_jobs(jobs: list[dict[str, Any]], cv_profile: dict[str, Any], junior_priority: bool = False) -> list[dict[str, Any]]:
@@ -500,5 +558,5 @@ def score_jobs(jobs: list[dict[str, Any]], cv_profile: dict[str, Any], junior_pr
         boost = _recency_boost(job.get("posted_date", ""), today)
         if junior_priority:
             boost += _junior_boost(job.get("title", ""))
-        job["relevance_score"] = max(1, min(10, base + boost))
+        job["relevance_score"] = max(3, min(10, base + boost))
     return jobs

@@ -55,7 +55,7 @@ from src.ats_scrapers import scrape_company, fetch_description_fallback, reset_h
 from src.matcher import (
     filter_by_title_only, filter_internships, resolve_munich_match, resolve_remote_eu_match,
     resolve_berlin_match, extract_location_snippet, extract_remote_snippet, extract_berlin_snippet,
-    score_jobs, is_excluded_seniority, is_excluded_language,
+    score_jobs, is_excluded_seniority, is_excluded_language, title_matches,
 )
 from src.tracker import update_tracker, update_general_tracker, update_remote_tracker, update_berlin_tracker
 from src.generate_html import generate as generate_html
@@ -195,7 +195,7 @@ def _process_profile(
 
 
 def scrape_munich_pool(
-    companies: list[dict], cv_profile: dict, general_profile: dict
+    companies: list[dict], cv_profile: dict, general_profile: dict, sustainability_company_names: "set[str] | None" = None,
 ) -> tuple[list[dict], list[dict], dict]:
     """Scrapes every Munich-pool company once, then runs both the
     sustainability and general-roles pipelines over that single
@@ -214,6 +214,10 @@ def scrape_munich_pool(
     trade-off looks safe in practice, lower it if 429s get noticeably
     worse.
     """
+    if sustainability_company_names is None:
+        sustainability_company_names = {
+            c["name"].strip().lower() for c in companies if c.get("sustainability_related")
+        }
     sustainability_jobs: list[dict[str, Any]] = []
     general_jobs: list[dict[str, Any]] = []
     ok_count = 0
@@ -246,7 +250,10 @@ def scrape_munich_pool(
         general_matched, general_stats = _process_profile(
             raw_jobs, general_profile, name, resolve_munich_match, {"assume_local": assume_local}, log_diag=False,
             title_filter=filter_internships,
-            title_filter_kwargs={"sustainability_related_company": sustainability_related_company},
+            title_filter_kwargs={
+                "sustainability_related_company": sustainability_related_company,
+                "sustainability_company_names": sustainability_company_names,
+            },
         )
         stats = {
             "postings": len(raw_jobs),
@@ -405,6 +412,50 @@ def scrape_remote_pool(companies: list[dict], remote_profile: dict) -> tuple[lis
     return remote_jobs, counts
 
 
+def _make_title_revalidator(profile: dict[str, Any]) -> Callable[[str, str], bool]:
+    """
+    Builds a (title, company) -> bool function that re-checks a
+    tracker row already sitting in a sheet against a profile's
+    title_must_match list — used for retroactive cleanup (see
+    src/tracker.py, _prune_excluded_titles) so a matching-logic fix
+    (like removing the Bundesagentur trust bypass) cleans up rows
+    already sitting in the sheet from a bad past run, not just
+    prevents new ones. Company is accepted but unused here — only the
+    internships revalidator needs it, for the sustainability_related
+    company exemption.
+    """
+    must_match = profile.get("title_must_match", [])
+
+    def _revalidate(title: str, company: str) -> bool:
+        return bool(title) and title_matches(title, must_match)
+
+    return _revalidate
+
+
+def _make_internship_revalidator(
+    profile: dict[str, Any], sustainability_company_names: set[str]
+) -> Callable[[str, str], bool]:
+    """Same idea as _make_title_revalidator, but for the internships
+    sheet's two-part rule: title must match title_must_match AND
+    (relevance_keywords match OR the company is sustainability-
+    related) — mirrors src/matcher.py's filter_internships, just
+    working from a tracker row's stored title/company instead of a
+    freshly-scraped job dict with a description available."""
+    must_match = profile.get("title_must_match", [])
+    relevance_keywords = profile.get("relevance_keywords", [])
+
+    def _revalidate(title: str, company: str) -> bool:
+        if not title or not title_matches(title, must_match):
+            return False
+        if not relevance_keywords:
+            return True
+        if company and company.strip().lower() in sustainability_company_names:
+            return True
+        return title_matches(title, relevance_keywords)
+
+    return _revalidate
+
+
 def run() -> None:
     cv_profile = load_yaml(CV_PROFILE_FILE)
     general_profile = load_yaml(GENERAL_ROLES_PROFILE_FILE)
@@ -427,7 +478,12 @@ def run() -> None:
     if ARBEITSAGENTUR_SEARCHES_FILE.exists():
         companies = companies + load_yaml(ARBEITSAGENTUR_SEARCHES_FILE)["companies"]
 
-    sustainability_jobs, general_jobs, munich_counts = scrape_munich_pool(companies, cv_profile, general_profile)
+    sustainability_company_names = {
+        c["name"].strip().lower() for c in companies if c.get("sustainability_related")
+    }
+    sustainability_jobs, general_jobs, munich_counts = scrape_munich_pool(
+        companies, cv_profile, general_profile, sustainability_company_names
+    )
 
     berlin_companies = []
     if BERLIN_COMPANIES_FILE.exists():
@@ -441,14 +497,22 @@ def run() -> None:
         remote_companies = load_yaml(REMOTE_SUSTAINABILITY_COMPANIES_FILE)["companies"]
     remote_jobs, remote_counts = scrape_remote_pool(remote_companies, remote_profile)
 
-    summary = update_tracker(TRACKER_FILE, sustainability_jobs, min_score=cv_profile.get("main_min_score", 0))
+    summary = update_tracker(
+        TRACKER_FILE, sustainability_jobs, min_score=cv_profile.get("main_min_score", 0),
+        revalidate_fn=_make_title_revalidator(cv_profile),
+    )
     general_summary = update_general_tracker(
-        TRACKER_FILE, general_jobs, min_score=general_profile.get("main_min_score", 0)
+        TRACKER_FILE, general_jobs, min_score=general_profile.get("main_min_score", 0),
+        revalidate_fn=_make_internship_revalidator(general_profile, sustainability_company_names),
     )
     remote_summary = update_remote_tracker(
-        TRACKER_FILE, remote_jobs, min_score=remote_profile.get("main_min_score", 0)
+        TRACKER_FILE, remote_jobs, min_score=remote_profile.get("main_min_score", 0),
+        revalidate_fn=_make_title_revalidator(remote_profile),
     )
-    berlin_summary = update_berlin_tracker(TRACKER_FILE, berlin_jobs, min_score=cv_profile.get("main_min_score", 0))
+    berlin_summary = update_berlin_tracker(
+        TRACKER_FILE, berlin_jobs, min_score=cv_profile.get("main_min_score", 0),
+        revalidate_fn=_make_title_revalidator(cv_profile),
+    )
 
     logger.info("-" * 60)
     logger.info(
