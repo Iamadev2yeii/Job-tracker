@@ -60,6 +60,16 @@ title_must_match:
   - "environmental analyst"
   - "regulatory affairs"
   - "impact assessment"
+  - "emissionshandel"
+  - "erneuerbare energien"
+  - "renewable energy"
+  - "nachhaltigkeitsberater"
+  - "klimabilanz"
+  - "treibhausgas"
+  - "greenhouse gas"
+  - "dekarbonisierung"
+  - "energiewende"
+  - "kreislaufwirtschaft"
 
 # main_min_score:
 #   No score floor is applied — every job that passes the title +

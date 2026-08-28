@@ -1,0 +1,207 @@
+# Real, targeted searches against Germany's official Bundesagentur für
+# Arbeit Jobsuche API — the Berlin equivalent of
+# arbeitsagentur_searches.yaml (see src/ats_scrapers.py,
+# scrape_arbeitsagentur, and that file's comments for why this is a
+# legitimate public API and how the response quirks were worked out).
+#
+# This is genuinely the highest-leverage source for Berlin: rather
+# than hand-naming a fraction of the 500+ sustainability companies and
+# hubs reportedly in Berlin, these 6 searches query the largest job
+# database in Germany directly and return the REAL hiring employer
+# for every result — far more scalable than a manually curated list
+# could ever be.
+#
+# assume_relevant_title: true is set on all of these (same reasoning
+# as the Munich searches) — the API's own "was" free-text search
+# matches thematically, not by literal substring in the returned
+# job's title, so re-checking that substring on top would wrongly
+# reject genuine matches.
+companies:
+#
+# Expanded from 6 to 30 keyword searches -- same reasoning as
+# arbeitsagentur_searches.yaml (the Munich equivalent): each
+# additional keyword is a real, zero-fabrication-risk source
+# querying Germany's actual job database directly. New terms
+# cover renewable energy, circular economy, hydrogen, recycling,
+# biodiversity, sustainable finance, sustainable construction,
+# and more.
+- name: Bundesagentur für Arbeit (Nachhaltigkeit, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeit&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (ESG, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=ESG&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Klimaschutz, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimaschutz&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Umweltmanagement, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltmanagement&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Nachhaltigkeitsmanager, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeitsmanager&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (CO2 Bilanzierung, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=CO2-Bilanzierung&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Umweltschutz, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltschutz&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Klimawandel, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimawandel&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Erneuerbare Energien, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Erneuerbare%20Energien&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Energiewende, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Energiewende&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Kreislaufwirtschaft, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Kreislaufwirtschaft&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Emissionshandel, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Emissionshandel&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Treibhausgas, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Treibhausgas&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Klimaneutralitaet, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimaneutralitaet&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Dekarbonisierung, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Dekarbonisierung&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Nachhaltigkeitsberater, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltigkeitsberater&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Umweltingenieur, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltingenieur&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Solarenergie, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Solarenergie&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Windenergie, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Windenergie&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Wasserstoff, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Wasserstoff&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Recycling, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Recycling&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Abfallwirtschaft, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Abfallwirtschaft&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Oekobilanz, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Oekobilanz&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Biodiversitaet, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Biodiversitaet&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Naturschutz, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Naturschutz&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Sustainable Finance, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Sustainable%20Finance&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Klimarisiko, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Klimarisiko&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Ressourceneffizienz, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Ressourceneffizienz&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Nachhaltiges Bauen, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Nachhaltiges%20Bauen&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
+- name: Bundesagentur für Arbeit (Umweltaudit, Berlin)
+  city: Berlin
+  careers_url: https://rest.arbeitsagentur.de/jobboerse/jobsuche-service/pc/v6/jobs?was=Umweltaudit&wo=Berlin&umkreis=30
+  ats: arbeitsagentur_api
+  board_token: ''
+  assume_relevant_title: true
