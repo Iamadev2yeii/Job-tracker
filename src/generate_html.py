@@ -3,13 +3,16 @@ Turns data/job_tracker.xlsx into a plain, static HTML page at
 docs/index.html, so it can be published via GitHub Pages — one link,
 opens in any browser, no Excel and no download needed.
 
-Renders all three sheets, in order:
+Renders all four sheets, in order:
   1. "Jobs" — sustainability/ESG-relevant roles in Munich (green
      highlight for new rows).
   2. "Munich Internships & Trainee" — Praktikum/Trainee
      postings in any field (amber highlight for new rows).
   3. "Remote Sustainability (Europe)" — fully remote ESG roles
      anywhere in Europe (blue highlight for new rows).
+  4. "Jobs - Berlin" — sustainability/ESG-relevant roles in Berlin,
+     same idea as sheet 1 but a different city (light purple
+     highlight for new rows).
 
 Called automatically at the end of both src/main.py (daily scrape) and
 src/reset_tracker.py (monthly reset), so the page is always in sync
@@ -32,8 +35,8 @@ from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
 from src.tracker import (
-    COLUMNS, NEW_ROW_FILL, GENERAL_NEW_ROW_FILL, REMOTE_NEW_ROW_FILL,
-    SHEET_NAME, GENERAL_SHEET_NAME, REMOTE_SHEET_NAME,
+    COLUMNS, NEW_ROW_FILL, GENERAL_NEW_ROW_FILL, REMOTE_NEW_ROW_FILL, BERLIN_NEW_ROW_FILL,
+    SHEET_NAME, GENERAL_SHEET_NAME, REMOTE_SHEET_NAME, BERLIN_SHEET_NAME,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -130,12 +133,13 @@ def generate(tracker_path: Path = TRACKER_FILE, output_path: Path = OUTPUT_FILE)
     general_min_score = _load_min_score(GENERAL_ROLES_PROFILE_FILE)
     remote_min_score = _load_min_score(REMOTE_SUSTAINABILITY_PROFILE_FILE)
 
-    ws = general_ws = remote_ws = None
+    ws = general_ws = remote_ws = berlin_ws = None
     if tracker_path.exists():
         wb = load_workbook(tracker_path)
         ws = wb[SHEET_NAME] if SHEET_NAME in wb.sheetnames else wb.active
         general_ws = wb[GENERAL_SHEET_NAME] if GENERAL_SHEET_NAME in wb.sheetnames else None
         remote_ws = wb[REMOTE_SHEET_NAME] if REMOTE_SHEET_NAME in wb.sheetnames else None
+        berlin_ws = wb[BERLIN_SHEET_NAME] if BERLIN_SHEET_NAME in wb.sheetnames else None
 
     rows_html, total = _render_table(ws, NEW_ROW_FILL, "new-row", "No data yet — the scraper hasn't run.")
     general_rows_html, general_total = _render_table(
@@ -144,15 +148,20 @@ def generate(tracker_path: Path = TRACKER_FILE, output_path: Path = OUTPUT_FILE)
     remote_rows_html, remote_total = _render_table(
         remote_ws, REMOTE_NEW_ROW_FILL, "remote-new-row", "No remote postings yet."
     )
+    berlin_rows_html, berlin_total = _render_table(
+        berlin_ws, BERLIN_NEW_ROW_FILL, "berlin-new-row", "No Berlin postings yet."
+    )
 
     title = "Munich ESG / Sustainability Jobs" + (f" (score {min_score}+ only)" if min_score else "")
     general_title = "Munich Internships & Trainee" + (f" (score {general_min_score}+ only)" if general_min_score else "")
     remote_title = "Remote Sustainability (Europe)" + (f" (score {remote_min_score}+ only)" if remote_min_score else "")
+    berlin_title = "Berlin ESG / Sustainability Jobs" + (f" (score {min_score}+ only)" if min_score else "")
     updated = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     jobs_section = _section_html(title, rows_html, total, "#D1FAE5")
     general_section = _section_html(general_title, general_rows_html, general_total, "#FDE68A")
     remote_section = _section_html(remote_title, remote_rows_html, remote_total, "#DBEAFE")
+    berlin_section = _section_html(berlin_title, berlin_rows_html, berlin_total, "#F3E8FF")
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -173,10 +182,12 @@ def generate(tracker_path: Path = TRACKER_FILE, output_path: Path = OUTPUT_FILE)
   tr.new-row {{ background: #D1FAE5; }}
   tr.general-new-row {{ background: #FDE68A; }}
   tr.remote-new-row {{ background: #DBEAFE; }}
+  tr.berlin-new-row {{ background: #F3E8FF; }}
   tr:hover {{ background: #f3f4f6; }}
   tr.new-row:hover {{ background: #bbf7d0; }}
   tr.general-new-row:hover {{ background: #fcd34d; }}
   tr.remote-new-row:hover {{ background: #bfdbfe; }}
+  tr.berlin-new-row:hover {{ background: #e9d5ff; }}
   a {{ color: #2563eb; text-decoration: none; }}
   a:hover {{ text-decoration: underline; }}
   .scroll-wrap {{ overflow-x: auto; margin-bottom: 8px; }}
@@ -195,6 +206,8 @@ def generate(tracker_path: Path = TRACKER_FILE, output_path: Path = OUTPUT_FILE)
 {general_section}
 <hr>
 {remote_section}
+<hr>
+{berlin_section}
 </body>
 </html>
 """

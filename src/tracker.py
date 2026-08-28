@@ -1,5 +1,5 @@
 """
-Manages the persistent Excel tracker file. Three sheets:
+Manages the persistent Excel tracker file. Four sheets:
 
   1. "Jobs" — sustainability/ESG-relevant roles in Munich, picked
      directly from company career pages (no job boards/agencies) plus
@@ -18,16 +18,22 @@ Manages the persistent Excel tracker file. Three sheets:
   3. "Remote Sustainability (Europe)" — fully remote ESG/sustainability
      roles anywhere in Europe, not scoped to Munich
      (config/remote_sustainability_profile.yaml).
+  4. "Jobs - Berlin" — sustainability/ESG-relevant roles in Berlin,
+     same philosophy as sheet 1 but for Berlin's metro area instead of
+     Munich's (config/berlin_companies.yaml,
+     config/berlin_arbeitsagentur_searches.yaml). Added because
+     Berlin reportedly has a much larger sustainability/climate-tech
+     company base than Munich.
 
 No relevance floor is ever applied on sheets 2 or 3 by default — the
 point of those sheets is employability/reach, not specialty fit.
 
-All three sheets share the same behaviour:
+All four sheets share the same behaviour:
   - Each run, only genuinely NEW postings (by URL) are added.
   - Postings already in a sheet are left alone (deduped by URL, per
     sheet — a URL only needs to be unique within its own sheet).
   - Every run, rows scoring below that sheet's min_score are pruned —
-    applies to rows already sitting in the sheet too. All three
+    applies to rows already sitting in the sheet too. All four
     default to 0 (off).
   - Every run, rows whose title now fails the universal seniority or
     language exclusion checks (src/matcher.py) are also pruned — a
@@ -38,7 +44,7 @@ All three sheets share the same behaviour:
   - Each sheet is re-sorted by Relevance Score (highest first) every
     run, so the best matches are always at the top.
   - archive_and_reset() (called from reset_tracker.py) archives ALL
-    THREE sheets together as one file and starts fresh for all of them.
+    FOUR sheets together as one file and starts fresh for all of them.
 """
 
 from __future__ import annotations
@@ -71,12 +77,14 @@ HEADER_FONT = Font(color="FFFFFF", bold=True)
 NEW_ROW_FILL = PatternFill(start_color="D1FAE5", end_color="D1FAE5", fill_type="solid")  # green
 GENERAL_NEW_ROW_FILL = PatternFill(start_color="FDE68A", end_color="FDE68A", fill_type="solid")  # amber
 REMOTE_NEW_ROW_FILL = PatternFill(start_color="DBEAFE", end_color="DBEAFE", fill_type="solid")  # blue
+BERLIN_NEW_ROW_FILL = PatternFill(start_color="F3E8FF", end_color="F3E8FF", fill_type="solid")  # light purple
 
 SHEET_NAME = "Jobs"
 GENERAL_SHEET_NAME = "Munich Internships & Trainee"
 REMOTE_SHEET_NAME = "Remote Sustainability (Europe)"
+BERLIN_SHEET_NAME = "Jobs - Berlin"
 
-ALL_SHEETS = [SHEET_NAME, GENERAL_SHEET_NAME, REMOTE_SHEET_NAME]
+ALL_SHEETS = [SHEET_NAME, GENERAL_SHEET_NAME, REMOTE_SHEET_NAME, BERLIN_SHEET_NAME]
 
 
 def _style_header(ws: Worksheet) -> None:
@@ -300,11 +308,21 @@ def update_remote_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score:
     return summary
 
 
+def update_berlin_tracker(path: Path, new_jobs: list[dict[str, Any]], min_score: int = 0) -> dict[str, int]:
+    """Updates the "Jobs - Berlin" sheet. Saves the file. Called
+    separately from the other update_* functions."""
+    wb = load_or_create(path)
+    summary = _update_sheet(wb, BERLIN_SHEET_NAME, BERLIN_NEW_ROW_FILL, new_jobs, min_score)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(path)
+    return summary
+
+
 def archive_and_reset(path: Path, archive_dir: Path) -> Path | None:
     """
-    Moves the current tracker (all three sheets) to
+    Moves the current tracker (all four sheets) to
     archive/job_tracker_YYYY-MM.xlsx and creates a fresh empty
-    tracker (all three sheets, empty) at `path`. Returns the archive
+    tracker (all four sheets, empty) at `path`. Returns the archive
     path, or None if there was nothing to archive.
     """
     if not path.exists():

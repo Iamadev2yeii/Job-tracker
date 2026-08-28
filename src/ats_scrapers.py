@@ -482,20 +482,25 @@ def scrape_generic(company_name: str, careers_url: str) -> list[dict[str, Any]]:
 # spent, remaining companies just keep whatever scrape_generic already
 # found — same as before this feature existed, not worse.
 # --------------------------------------------------------------------------
+import threading
+
 _HEADLESS_BUDGET_SECONDS = 900  # 15 minutes reserved for the whole run
 _headless_time_used = 0.0
+_headless_budget_lock = threading.Lock()
 GENERIC_RESULT_SUSPICIOUSLY_LOW = 5  # fewer real-looking links than this -> probably a JS shell, worth a retry
 
 
 def reset_headless_budget() -> None:
     """Call once per full run (see main.py) so the budget doesn't leak across runs."""
     global _headless_time_used
-    _headless_time_used = 0.0
+    with _headless_budget_lock:
+        _headless_time_used = 0.0
 
 
 def headless_budget_remaining() -> float:
     """Seconds of headless-rendering time left before this run's cap kicks in."""
-    return max(0.0, _HEADLESS_BUDGET_SECONDS - _headless_time_used)
+    with _headless_budget_lock:
+        return max(0.0, _HEADLESS_BUDGET_SECONDS - _headless_time_used)
 
 
 def scrape_headless(company_name: str, careers_url: str) -> list[dict[str, Any]]:
@@ -508,6 +513,12 @@ def scrape_headless(company_name: str, careers_url: str) -> list[dict[str, Any]]
     time budget is already spent — see module docstring above — or on
     any error (missing browser install, page timeout, etc.), same
     defensive contract as every other scraper here.
+
+    Thread-safe: main.py now scrapes companies concurrently, so several
+    threads can hit this at once — the budget check-and-spend is
+    protected by a lock (a small amount of overshoot past the exact
+    900s cap is possible if multiple threads pass the check before any
+    of them finish, which is fine for a soft cap like this one).
     """
     global _headless_time_used
 
@@ -528,9 +539,11 @@ def scrape_headless(company_name: str, careers_url: str) -> list[dict[str, Any]]
                 browser.close()
     except Exception as exc:
         logger.warning("Headless render failed for %s: %s", company_name, exc)
-        _headless_time_used += time.monotonic() - start
+        with _headless_budget_lock:
+            _headless_time_used += time.monotonic() - start
         return []
-    _headless_time_used += time.monotonic() - start
+    with _headless_budget_lock:
+        _headless_time_used += time.monotonic() - start
 
     soup = BeautifulSoup(html, "html.parser")
     jobs = []
@@ -657,6 +670,7 @@ def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
         logger.info("  DIAG (Bundesagentur): 0 postings returned. response keys=%s", list(data.keys()))
 
     jobs = []
+    dumped_raw_sample = False
     for posting in postings:
         # Field names have shifted across API versions (refnr vs
         # referenznummer) — check both defensively.
@@ -674,8 +688,31 @@ def scrape_arbeitsagentur(careers_url: str) -> list[dict[str, Any]]:
             f"https://www.arbeitsagentur.de/jobsuche/jobdetail/{refnr}" if refnr else ""
         )
 
+        # The title field name has been the least reliable part of
+        # this whole integration — "beruf" and "titel" both came back
+        # empty for every posting in a real run despite the API
+        # genuinely returning matching jobs. Try every plausible name
+        # at once instead of guessing one at a time.
+        title = ""
+        for field in ("beruf", "titel", "stellenangebotsTitel", "stellenbezeichnung", "jobTitel", "title"):
+            if posting.get(field):
+                title = posting[field]
+                break
+
+        if not title and not dumped_raw_sample:
+            # Every previous guess at this API's field names has been
+            # wrong in a different way across three rounds of fixes —
+            # rather than guess a fourth time, dump the actual raw
+            # posting so the next real log shows exactly what's there.
+            import json as _json
+            logger.warning(
+                "  DIAG (Bundesagentur): no title field matched any known name. Raw posting sample: %s",
+                _json.dumps(posting, ensure_ascii=False)[:800],
+            )
+            dumped_raw_sample = True
+
         jobs.append({
-            "title": posting.get("beruf", "") or posting.get("titel", ""),
+            "title": title,
             "location": location,
             "url": url_out,
             "description": "",  # search results don't include full text; the enrichment fetch in main.py picks it up from url_out

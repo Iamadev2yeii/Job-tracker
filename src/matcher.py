@@ -74,12 +74,39 @@ OTHER_MAJOR_LOCATIONS = [
     "boston", "chicago", "los angeles", "washington", "atlanta",
     "zurich", "zürich", "geneva", "genève", "basel", "bern", "lausanne",
     "lucerne", "luzern",
+    # Country/region-level terms — added after a US-located internship
+    # slipped through on a company flagged assume_local: true. A
+    # blank location on that kind of company defaults to a Munich
+    # match, but a location that DOES say "USA" (just not one of the
+    # specific cities listed above) was falling through as merely
+    # "unconfirmed" rather than a clear mismatch, so assume_local
+    # wrongly overrode it. These catch that regardless of which
+    # specific city is named.
+    "usa", "u.s.a", "united states", "us-based", "canada", "mexico",
+    "brazil", "united kingdom", "australia", "new zealand", "china",
+    "south korea", "india", "japan", "united arab emirates", "dubai",
 ]
 
 
 def title_matches(title: str, must_match: list[str]) -> bool:
     t = title.lower()
     return any(term.lower() in t for term in must_match)
+
+
+def _combined_text(job: dict[str, Any]) -> str:
+    """
+    Title plus description, when a description is available. Several
+    scrapers (Greenhouse, Lever, Personio — see src/ats_scrapers.py)
+    already capture full description text as part of their normal
+    listing call, at zero extra network cost — that text was sitting
+    unused before this, since matching only ever looked at the title.
+    A permanent role with a generic German title ("Referent (m/w/d)")
+    but ESG-specific duties described in the body is a real, common
+    pattern this now catches for free. Companies scraped generically
+    (no description available) are unaffected — this just adds a
+    second field to check when there's something in it.
+    """
+    return f"{job.get('title', '')} {job.get('description', '')}"
 
 
 # Titles clearly pitched at senior/leadership level — excluded per
@@ -143,15 +170,18 @@ def location_status(location: str) -> str:
 
 def filter_by_title_only(jobs: list[dict[str, Any]], cv_profile: dict[str, Any]) -> list[dict[str, Any]]:
     """
-    Title check plus seniority and language exclusion — no location
-    decision yet (see main.py's scrape_munich docstring for why
-    that's done later, after enrichment).
+    Relevance check (title + description when available — see
+    _combined_text) plus seniority and language exclusion (title
+    only — see is_excluded_seniority/is_excluded_language's own
+    docstrings for why those stay title-scoped). No location decision
+    yet (see main.py's scrape_munich docstring for why that's done
+    later, after enrichment).
     """
     must_match = cv_profile.get("title_must_match", [])
     return [
         job for job in jobs
         if job.get("title")
-        and title_matches(job["title"], must_match)
+        and title_matches(_combined_text(job), must_match)
         and not is_excluded_seniority(job["title"])
         and not is_excluded_language(job["title"])
     ]
@@ -162,19 +192,23 @@ def filter_internships(
 ) -> list[dict[str, Any]]:
     """
     For the "Munich Internships & Trainee" sheet specifically: a job
-    must be BOTH an internship/trainee-type posting (title_must_match)
-    AND relevant to Prabha's actual field (title contains a
-    relevance_keywords term) — UNLESS the posting comes from a company
-    whose core business already IS that field (sustainability_related_
-    company=True, set per-entry in companies.yaml), in which case any
-    internship/trainee title at that company counts, even a generically
-    titled one like "Praktikum Marketing" at a climate-tech startup.
+    must be BOTH an internship/trainee-type posting (title_must_match,
+    checked against the TITLE ONLY — whether something IS an
+    internship is a title-level classification, not something a
+    permanent role's description can turn it into) AND relevant to
+    Prabha's actual field (relevance_keywords, checked against title
+    + description when available — see _combined_text) — UNLESS the
+    posting comes from a company whose core business already IS that
+    field (sustainability_related_company=True, set per-entry in
+    companies.yaml), in which case any internship/trainee title at
+    that company counts, even a generically titled one like
+    "Praktikum Marketing" at a climate-tech startup.
 
     This is deliberately narrower than an earlier version of this
     sheet, which accepted ANY-field internships — that surfaced things
     like a Korean-market trainee program with no connection to
     Prabha's background at all. Seniority and language exclusion still
-    apply via the title_must_match check above.
+    apply, checked against the title only.
     """
     must_match = profile.get("title_must_match", [])
     relevance_keywords = profile.get("relevance_keywords", [])
@@ -187,7 +221,7 @@ def filter_internships(
             continue
         if is_excluded_seniority(title) or is_excluded_language(title):
             continue
-        if sustainability_related_company or not relevance_keywords or title_matches(title, relevance_keywords):
+        if sustainability_related_company or not relevance_keywords or title_matches(_combined_text(job), relevance_keywords):
             result.append(job)
     return result
 
@@ -210,6 +244,50 @@ def resolve_munich_match(job: dict[str, Any], search_text: str | None = None, as
     """
     text = search_text if search_text is not None else job.get("location", "")
     status = location_status(text)
+    if status == "confirmed":
+        return True
+    if status == "unconfirmed" and assume_local:
+        return True
+    return False
+
+
+# --- Berlin matching, for the "Jobs - Berlin" sheet — same idea as
+# Munich matching (a specific metro area, not remote), just a
+# different city and its own commuter belt (mostly Brandenburg towns
+# rather than Bavarian ones).
+BERLIN_KEYWORDS = [
+    "berlin", "potsdam", "falkensee", "bernau", "oranienburg",
+    "königs wusterhausen", "koenigs wusterhausen", "werder", "teltow",
+    "kleinmachnow", "strausberg", "eichwalde", "schönefeld", "schoenefeld",
+    "hennigsdorf", "velten", "birkenwerder", "ludwigsfelde", "rangsdorf",
+    "zeuthen", "wildau", "erkner", "fürstenwalde", "fuerstenwalde",
+]
+
+
+def berlin_location_status(location: str) -> str:
+    """Same three-state logic as location_status, but for Berlin
+    metro area confirmation instead of Munich."""
+    if not location:
+        return "unconfirmed"
+    loc = location.lower()
+    if any(kw in loc for kw in BERLIN_KEYWORDS):
+        return "confirmed"
+    # Reuses OTHER_MAJOR_LOCATIONS as the "named a different city"
+    # check, plus Munich itself and its commuter towns — a job
+    # explicitly in Munich should obviously not count as Berlin.
+    if any(kw in loc for kw in OTHER_MAJOR_LOCATIONS) or any(kw in loc for kw in MUNICH_KEYWORDS):
+        return "mismatch"
+    return "unconfirmed"
+
+
+def resolve_berlin_match(job: dict[str, Any], search_text: str | None = None, assume_local: bool = False) -> bool:
+    """
+    Berlin-area equivalent of resolve_munich_match — same
+    assume_local reasoning (a blank location at a genuine single-
+    Berlin-office company is treated as a pass instead of dropped).
+    """
+    text = search_text if search_text is not None else job.get("location", "")
+    status = berlin_location_status(text)
     if status == "confirmed":
         return True
     if status == "unconfirmed" and assume_local:
@@ -315,6 +393,13 @@ def extract_remote_snippet(text: str, window: int = 30) -> str:
     is that Munich is NOT where these jobs are.
     """
     return _extract_keyword_snippet(text, REMOTE_KEYWORDS, window, fallback="Remote")
+
+
+def extract_berlin_snippet(text: str, window: int = 30) -> str:
+    """Same idea as extract_location_snippet, but for the Berlin
+    pipeline — pulls a window around a BERLIN_KEYWORDS match, with a
+    "Berlin" fallback instead of "Munich"."""
+    return _extract_keyword_snippet(text, BERLIN_KEYWORDS, window, fallback="Berlin")
 
 
 def _extract_keyword_snippet(text: str, keywords: list[str], window: int, fallback: str) -> str:
